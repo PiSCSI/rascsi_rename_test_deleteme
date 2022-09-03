@@ -28,7 +28,7 @@ jobs:
         path: test_log.txt
   
   code_coverage_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
         
