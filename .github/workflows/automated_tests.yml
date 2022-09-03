@@ -1,0 +1,29 @@
+name: Run automated unit tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install cross compile toolchain
+      run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
+    
+    - name: Install libraries
+      run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler libgtest-dev libgmock-dev
+    
+    - name: Run tests
+      run: make -C src/raspberrypi -j test
+      
+    - name: Save Log
+      run: src/raspberrypi/bin/fullspec/rascsi_test | tee test_log.txt
+      
+    - name: upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: test log
+        path: test_log.txt

@@ -1,0 +1,27 @@
+name: Code Coverage
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+        
+    - name: Install libraries
+      run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler libgtest-dev
+    
+    - name: Gerenate coverage
+      run: make -C src/raspberrypi -j coverage
+      
+    - name: Save Log
+      run: src/raspberrypi/bin/fullspec/rascsi_test | tee test_log.txt
+      
+    - name: upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: test log
+        path: test_log.txt
+      
