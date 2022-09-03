@@ -1,8 +1,8 @@
 name: Build C++ Packages
 
-  #on: [push, pull_request]
+on: [push, pull_request]
 
-on: pull_request
+  #on: pull_request
 
 jobs:
   build:
@@ -16,7 +16,16 @@ jobs:
 
     - name: versiondump arm gcc version
       run: cat /etc/lsb-release
- 
+
+    - name: Add armhf as architecture
+      run: sudo dpkg --add-architecture armhf
+
+    - name: Dump architectures
+      run: sudo dpkg --print-foreign-architectures
+
+    - name: Update apt
+      run: sudo apt update
+
     - name: Install cross compile toolchain
       run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
     
