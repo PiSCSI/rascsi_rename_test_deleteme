@@ -48,15 +48,12 @@ class RaCtlCmds:
 
         # Creates lists of file endings recognized by RaSCSI
         mappings = result.server_info.mapping_info.mapping
-        sahd = []
         schd = []
         scrm = []
         scmo = []
         sccd = []
         for dtype in mappings:
-            if mappings[dtype] == proto.PbDeviceType.SAHD:
-                sahd.append(dtype)
-            elif mappings[dtype] == proto.PbDeviceType.SCHD:
+            if mappings[dtype] == proto.PbDeviceType.SCHD:
                 schd.append(dtype)
             elif mappings[dtype] == proto.PbDeviceType.SCRM:
                 scrm.append(dtype)
@@ -73,7 +70,6 @@ class RaCtlCmds:
             "reserved_ids": reserved_ids,
             "image_dir": image_dir,
             "scan_depth": scan_depth,
-            "sahd": sahd,
             "schd": schd,
             "scrm": scrm,
             "scmo": scmo,
