@@ -33,7 +33,7 @@ jobs:
     - uses: actions/checkout@v3
         
     - name: Install libraries
-      run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler libgtest-dev libgmock-devi lcov
+      run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler libgtest-dev libgmock-dev lcov
     
     - name: Gerenate coverage
       run: make -C src/raspberrypi -j6 coverage
