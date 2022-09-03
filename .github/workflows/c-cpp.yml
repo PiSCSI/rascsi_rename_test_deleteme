@@ -3,7 +3,7 @@ name: Build C++ Packages
 on: [push, pull_request]
 
 jobs:
-  Compile Everything:
+  build:
     runs-on: ubuntu-22.04
 
     steps:
