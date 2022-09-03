@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install cross compile toolchain
-      run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
+      run: sudo apt-get install gcc-11-arm-linux-gnueabihf g++-11-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
     
     - name: Install libraries
       run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler 
