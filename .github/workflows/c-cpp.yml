@@ -39,10 +39,10 @@ jobs:
       run: sudo apt update
 
     - name: Install cross compile toolchain
-      run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev -y
+      run: sudo apt-get --yes install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
     
     - name: Install libraries
-      run: sudo apt-get install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler libprotobuf-dev:armhf -y 
+      run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler libprotobuf-dev:armhf 
 
     - name: dump arm gcc version
       run: arm-linux-gnueabihf-gcc -v
