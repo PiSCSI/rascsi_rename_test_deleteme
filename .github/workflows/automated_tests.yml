@@ -37,16 +37,16 @@ jobs:
     
     - name: Gerenate coverage
       run: make -C src/raspberrypi -j6 coverage
-      
-    - name: Save Log
-      run: src/raspberrypi/bin/fullspec/rascsi_test | tee coverage_test_log.txt
+     
+    - name: tar coverage data
+      run: tar -czvf coverage.tar.gz ./coverage
+      working-directory: ./src/raspberrypi
       
     - name: upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: coverage test log
-        path: coverage_test_log.txt
-
+        name: Coverage data
+        path: ./src/raspberrypi/coverage.tar.gz
 
 
   SonarCloud_Analysis:
