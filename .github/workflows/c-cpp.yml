@@ -26,11 +26,11 @@ jobs:
  
 
     - name: make standard
-      run: make all -j CONNECT_TYPE=STANDARD CROSS_COMPILE=arm-linux-gnueabihf-
+      run: make all -j6 CONNECT_TYPE=STANDARD CROSS_COMPILE=arm-linux-gnueabihf-
       working-directory: ./src/raspberrypi
  
     - name: make fullspec
-      run: make all -j CONNECT_TYPE=FULLSPEC CROSS_COMPILE=arm-linux-gnueabihf-
+      run: make all -j6 CONNECT_TYPE=FULLSPEC CROSS_COMPILE=arm-linux-gnueabihf-
       working-directory: ./src/raspberrypi
 
     # We need to tar the binary outputs to retain the executable
