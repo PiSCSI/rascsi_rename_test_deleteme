@@ -17,7 +17,7 @@ jobs:
       run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler 
     
     - name: Run tests
-      run: make -C src/raspberrypi -j tests
+      run: make -C src/raspberrypi -j test
       
     - name: Save Log
       run: src/raspberrypi/bin/fullspec/rascsi_test | tee test_log.txt
