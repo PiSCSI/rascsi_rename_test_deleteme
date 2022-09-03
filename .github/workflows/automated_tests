@@ -21,5 +21,9 @@ jobs:
       
     - name: Save Log
       run: src/raspberrypi/bin/fullspec/rascsi_test | tee test_log.txt
-
       
+    - name: upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: test log
+        path: test_log.txt
