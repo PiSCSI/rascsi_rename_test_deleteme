@@ -7,9 +7,7 @@ on:
       - 'releases/**'
 
 jobs:
-  build:
-
-    #    runs-on: ubuntu-latest
+  functional_test:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3
@@ -28,3 +26,25 @@ jobs:
       with:
         name: test log
         path: test_log.txt
+  
+  code_coverage_test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+        
+    - name: Install libraries
+      run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-c
+ompiler libgtest-dev libgmock-dev
+    
+    - name: Gerenate coverage
+      run: make -C src/raspberrypi -j6 coverage
+      
+    - name: Save Log
+      run: src/raspberrypi/bin/fullspec/rascsi_test | tee coverage_test_log.txt
+      
+    - name: upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage test log
+        path: coverage_test_log.txt
+
