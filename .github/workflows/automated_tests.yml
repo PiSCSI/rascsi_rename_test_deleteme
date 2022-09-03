@@ -3,7 +3,7 @@ name: Run automated unit tests
 on:
   push:
     branches:
-      - main
+      - master
       - 'releases/**'
 
 jobs:
@@ -13,9 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Install cross compile toolchain
-      run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
     
     - name: Install libraries
       run: sudo apt-get install libspdlog-dev libpcap-dev libevdev2 libev-dev protobuf-compiler libgtest-dev libgmock-dev
