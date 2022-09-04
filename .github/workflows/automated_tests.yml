@@ -87,10 +87,33 @@ jobs:
       - name: Run build-wrapper
         run: |
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make -C src/raspberrypi -j6 all
+
+      - name: Run tests
+        run: |
+          ./bin/fullspec/rascsi_test
+        working-directory: ./src/raspberrypi/
+
+      - name: List contents
+        run: |
+          ls -alh
+        working-directory: ./src/raspberrypi/
+
+      - name: Convert Data
+        run: |
+          mkdir -p ./cov_data
+          cd cov_data
+          find ../obj/fullspec/ -name '*.o' | xargs gcov --preserve-paths
+        working-directory: ./src/raspberrypi
+
+      - name: List contents
+        run: |
+          ls -alh
+        working-directory: ./src/raspberrypi/cov_data
+
       - name: Run sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}" --define sonar.projectKey=akuker_RASCSI --define sonar.organization=rascsi
+          sonar-scanner --define sonar.host.url="${{ env.SONAR_SERVER_URL }}" --define sonar.cfamily.build-wrapper-output="${{ env.BUILD_WRAPPER_OUT_DIR }}" --define sonar.projectKey=akuker_RASCSI --define sonar.organization=rascsi --define sonar.cfamily.gcov.reportsPath="./src/raspberrypi/cov_data"
 
