@@ -63,7 +63,7 @@ jobs:
         run: sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev libpcap-dev protobuf-compiler
 
       - name: Install dependencies
-        run: sudo apt-get install libspdlog-dev libpcap-dev protobuf-compiler libprotobuf-dev libprotobuf-c-dev libev-dev libevdev2 libgmock-dev
+        run: sudo apt-get install libspdlog-dev libpcap-dev protobuf-compiler libprotobuf-dev libprotobuf-c-dev libev-dev libevdev2 libgmock-dev lcov
 
       - name: Set up JDK 11
         uses: actions/setup-java@v1
