@@ -1,4 +1,4 @@
-name: Build C++ Packages
+name: Build Bullseye C++ Packages
 
 on: [push, pull_request]
 
