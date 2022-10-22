@@ -27,8 +27,25 @@ jobs:
     - name: Install cross compile toolchain
       run: sudo apt-get --yes install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
     
-    - name: Install libraries
+    - name: Install libraries libspdlog-dev
+      run: sudo apt-get --yes install libspdlog-dev:armhf
+
+
+    - name: Install libraries libpcap-dev
+      run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf 
+
+    - name: Install libraries libevdev2
+      run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf
+
+    - name: Install libraries libev-dev
+      run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf
+
+    - name: Install libraries protobuf-compiler
+      run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler
+
+    - name: Install libraries libprotobuf-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler libprotobuf-dev:armhf 
+
 
     - name: make standard
       run: make all -j6 CONNECT_TYPE=STANDARD CROSS_COMPILE=arm-linux-gnueabihf-
