@@ -25,8 +25,8 @@ jobs:
       run: sudo apt update
       
       
-    - name: Search evdev
-      run: sudo apt search libevdev
+    - name: look for gcc
+      run: ls -alh /usr/bin/*gcc*
 
 #     - name: Install cross compile toolchain
 #       run: sudo apt-get --yes install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
