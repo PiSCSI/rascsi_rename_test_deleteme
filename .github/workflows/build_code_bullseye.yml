@@ -25,9 +25,6 @@ jobs:
       run: sudo apt update
       
       
-    - name: look for gcc
-      run: ls -alh /usr/bin/*gcc*
-
 #     - name: Install cross compile toolchain
 #       run: sudo apt-get --yes install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libspdlog-dev
       
@@ -37,6 +34,8 @@ jobs:
     - name: Install libraries libspdlog-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf
 
+    - name: look for gcc
+      run: ls -alh /usr/bin/*gcc*
 
     - name: Install libraries libpcap-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf 
