@@ -50,6 +50,11 @@ jobs:
     - name: Install libraries libprotobuf-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler libprotobuf-dev:armhf 
 
+    - name: Dump gcc version
+      run: gcc -dumpversion
+
+    - name: Echo Gt 10
+      run: echo $(shell expr `gcc -dumpversion` \>= 10)
 
     - name: make standard
       run: make all -j6 CONNECT_TYPE=STANDARD CROSS_COMPILE=arm-linux-gnueabihf-
