@@ -9,8 +9,8 @@ GCCVERSION10 := $(shell expr `gcc -dumpversion` \>= 10)
 ##                   arm-linux-gnueabihf-
 CROSS_COMPILE =
 
-CC = $(CROSS_COMPILE)gcc
-CXX = $(CROSS_COMPILE)g++
+CC ?= $(CROSS_COMPILE)gcc
+CXX ?= $(CROSS_COMPILE)g++
 
 ##   DEBUG=1  : A Debug build includes the debugger symbols
 ##              and disables compiler optimization. Typically,
