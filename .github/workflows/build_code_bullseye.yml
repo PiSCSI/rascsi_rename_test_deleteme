@@ -76,11 +76,11 @@ jobs:
 #       run: echo $(shell expr `arm-linux-gnueabihf-gcc -dumpversion` \>= 10)
 
     - name: make standard
-      run: make all -j6 CONNECT_TYPE=STANDARD CROSS_COMPILE=arm-linux-gnueabihf-
+      run: make all  CONNECT_TYPE=STANDARD
       working-directory: ./src/raspberrypi
  
     - name: make fullspec
-      run: make all -j6 CONNECT_TYPE=FULLSPEC CROSS_COMPILE=arm-linux-gnueabihf-
+      run: make all CONNECT_TYPE=FULLSPEC
       working-directory: ./src/raspberrypi
 
     # We need to tar the binary outputs to retain the executable
