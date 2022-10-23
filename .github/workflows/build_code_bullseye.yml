@@ -2,6 +2,10 @@ name: Build Bullseye C++ Packages
 
 on: [push, pull_request]
 
+env:
+  CC: arm-linux-gnueabihf-gcc-8
+  CXX: arm-linux-gnueabihf-g++-8
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -37,6 +41,9 @@ jobs:
     - name: look for gcc
       run: ls -alh /usr/bin/*gcc*
 
+    - name: look for g++
+      run: ls -alh /usr/bin/*g++*
+
     - name: Install libraries libpcap-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf 
 
@@ -52,13 +59,13 @@ jobs:
     - name: Install libraries libprotobuf-dev
       run: sudo apt-get --yes install libspdlog-dev:armhf libpcap-dev:armhf libevdev2:armhf libev-dev:armhf protobuf-compiler libprotobuf-dev:armhf 
 
-    - name: dump arm gcc version
-      run: arm-linux-gnueabihf-gcc -v
-      working-directory: ./src/raspberrypi
+#     - name: dump arm gcc version
+#       run: arm-linux-gnueabihf-gcc -v
+#       working-directory: ./src/raspberrypi
  
-    - name: dump native gcc version
-      run: gcc -v
-      working-directory: ./src/raspberrypi
+#     - name: dump native gcc version
+#       run: gcc -v
+#       working-directory: ./src/raspberrypi
  
 
 
