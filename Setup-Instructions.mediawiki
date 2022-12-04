@@ -1,0 +1,215 @@
+= Raspberry Pi operating system installation =
+
+'''Important:''' We distribute pre-configured Raspberry Pi OS images with PiSCSI ready to be used out of the box. Please find links on the [https://tracker.iplocation.net/jtdd/ Releases] page.
+
+The PiSCSI software some basic software requirements, and should work on any reasonably modern version of Linux. However, development and testing for this project is done on [https://www.raspberrypi.org/downloads/raspberry-pi-os/ Raspberry Pi OS] (formerly called Raspbian). The following instructions are written with the assumption you are using Raspberry Pi OS 10. Raspberry Pi OS 11 requires additional compiler flags, see below.
+
+To get going, if you haven't already, follow the official [https://www.raspberrypi.org/documentation/installation/ Raspberry Pi OS installation instructions]. 
+
+'''Note:''' Installing the desktop environment on your Raspberry Pi is not required to run PiSCSI. Consider installing Raspberry Pi OS (32-bit) Lite to save on disk space.
+
+In the spirit of not running unnecessary cables, if you need to setup a WiFi connection on your Raspberry Pi, follow [https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md these steps]
+
+
+__TOC__
+
+= Clone & build the PiSCSI software =
+The next step is to download the PiSCSI software from GitHub and build it.
+
+'''1.''' [https://tutorials-raspberrypi.com/raspberry-pi-default-login-password/ Log into the Raspberry Pi.]
+
+'''1a.''' If you've installed Raspberry Pi OS with the desktop, open a terminal window.
+
+'''1b.''' If you've installed Raspberry Pi OS Lite, ssh into your Raspberry Pi.
+
+'''2.''' Install the git, libspdlog-dev, protobuf-compiler, and libpcap-dev packages. Git is used to clone the PiSCSI repository to your system so we can build the software. For more information on git, check [https://en.wikipedia.org/wiki/Git this Wikipedia article]. spdlog is a logging library which is used by the PiSCSI software. More information on spdlog can be [https://github.com/gabime/spdlog/wiki found here].
+```
+sudo apt-get update && sudo apt-get install --yes git libspdlog-dev protobuf-compiler libpcap-dev
+```
+
+'''3.''' The next step is to clone the PiSCSI Git repository, build the software, and install it on your Raspberry Pi. Enter the following commands in your terminal/ssh session.
+```
+cd ~  
+git clone https://github.com/piscsi/piscsi.git  
+```
+
+'''4.''' Determine which board you have. The two common options are "STANDARD" or "FULLSPEC". Information on which model you have can be found at the [https://github.com/piscsi/piscsi/wiki/Hardware-Versions Hardware Versions] page. If you purchased your PiSCSI from Tindie, you will have version 2.2 or newer, which are all "FULLSPEC" boards. You can also check the silkscreen on the PiSCSI board for the version number. Enter the following commands in your terminal/ssh session.
+
+The ''AIBOM'' and ''GAMERNIUM'' board types are supported as well, but are not actively tested by the authors.
+
+'''Note:''' You can also use the easyinstall.sh script, that will automate all the steps described below for you. After cloning the repository on your Raspberry Pi, execute the following (defaults to FULLSPEC):
+```
+cd ~/piscsi
+./easyinstall.sh
+```
+
+Or, if you have a '''STANDARD''' board:
+
+```
+cd ~/piscsi
+./easyinstall.sh -c=STANDARD
+```
+
+If you ''don't'' use the script, here follows the manual steps to compile and install PiSCSI. If you have the '''FULLSPEC''' board (version 2.1 or newer) use this...
+
+```
+cd ~/piscsi/src/raspberrypi 
+make all CONNECT_TYPE=FULLSPEC 
+sudo make install CONNECT_TYPE=FULLSPEC
+```
+
+If you have the '''STANDARD''' board (version 1.6 or older) use this...
+
+```
+cd ~  
+git clone https://github.com/piscsi/piscsi.git  
+cd ~/piscsi/src/raspberrypi 
+make all CONNECT_TYPE=STANDARD
+sudo make install CONNECT_TYPE=STANDARD
+```
+
+'''Note:''' Be sure to select the correct connection type in the above step. If you compile for STANDARD and have a FULLSPEC board, the PiSCSI software will not not behave properly, and you will not see images presented on the SCSI bus.
+
+
+'''5.''' The last step is to restart the rsyslog daemon (which enables logging), configure systemd to start PiSCSI at boot, start the PiSCSI service, and verify that it is running.
+
+```
+sudo systemctl restart rsyslog
+sudo systemctl enable rascsi # optional - start rascsi at boot
+sudo systemctl start rascsi
+sudo systemctl status rascsi
+```
+'''6.''' If the above steps complete successfully, you are now done cloning and building the PiSCSI software.
+
+== Installing required Linux packages ==
+
+To actually run the PiSCSI software, you may need to install Linux packages that the software depends on.  Without those packages, the software will not run properly, and throw an error when you try to launch it.
+
+If you use the easyinstall.sh script to install PiSCSI it will take care of installing the dependencies for you.  But if you are installing manually, you will have to use the package manager on your Linux system to install the required packages yourself:
+
+```
+sudo apt-get update && sudo apt-get install git libspdlog-dev libpcap-dev genisoimage python3 python3-venv nginx libpcap-dev protobuf-compiler bridge-utils python3-dev libev-dev libevdev2 -y
+```
+
+Note that when moving to a major new version of PiSCSI there may have been new dependencies introduced, for instance when trying out '''develop''' after having used '''master'''.  It is good practice to run the easyinstall.sh script again in these cases.
+
+== Upgrading an existing installation to the latest ==
+
+As this project is still under active development, many of you will want to upgrade your existing PiSCSI software.  That's super easy, just follow these steps.
+
+'''Note:''' Performing the following will stop and restart the PiSCSI software.  This will make your PiSCSI presented images disappear and re-appear on the SCSI bus when the service is stopped, and restarted.
+
+If you have the '''FULLSPEC''' board (version 2.1 or newer) use this...
+
+```
+cd ~/piscsi
+sudo systemctl stop rascsi
+sudo apt-get update && sudo apt-get install git libspdlog-dev libpcap-dev genisoimage python3 python3-venv nginx libpcap-dev protobuf-compiler bridge-utils python3-dev libev-dev libevdev2 -y
+git pull
+cd ~/piscsi/src/raspberrypi 
+make clean
+make all CONNECT_TYPE=FULLSPEC
+sudo make install CONNECT_TYPE=FULLSPEC
+sudo systemctl start rascsi
+sudo systemctl status rascsi
+```
+
+If you have the '''STANDARD''' board (version 1.6 or older) use this...
+
+```
+cd ~/piscsi
+sudo systemctl stop rascsi
+sudo apt-get update && sudo apt-get install git libspdlog-dev libpcap-dev genisoimage python3 python3-venv nginx libpcap-dev protobuf-compiler bridge-utils python3-dev libev-dev libevdev2 -y
+git pull
+cd ~/piscsi/src/raspberrypi 
+make clean
+make all CONNECT_TYPE=STANDARD
+sudo make install CONNECT_TYPE=STANDARD
+sudo systemctl start rascsi
+sudo systemctl status rascsi
+```
+
+= Reviewing the PiSCSI service logs =
+
+Logging for the PiSCSI daemon can be found in /var/log/rascsi.log
+
+Once you've completed the steps above, you can confirm the daemon is running by checking /var/log/rascsi.log
+
+```
+pi@raspberrypi:~/piscsi/src/raspberrypi $ cat /var/log/rascsi.log
+Nov  5 08:52:40 rasp32 piscsi[32588]: SCSI Target Emulator PiSCSI Reloaded version 22.11  (Oct 26 2022 11:49:27)
+Nov  5 08:52:40 rasp32 piscsi[32588]: Powered by XM6 TypeG Technology / Copyright (C) 2016-2020 GIMONS
+Nov  5 08:52:40 rasp32 piscsi[32588]: Copyright (C) 2020-2022 Contributors to the PiSCSI Reloaded project
+Nov  5 08:52:40 rasp32 piscsi[32588]: Connect type: FULLSPEC
+```
+
+If you see output similar to the above, the PiSCSI service has compiled without issue, and you've created and started the service successfully.
+
+= I have the software, what next? =
+
+With the above steps completed, we proceed to [[Connecting the PiSCSI]]. This document covers SCSI devices, termination and how to connect your PiSCSI device to a computer.
+
+= (Optional) Cross-Compile Instructions =
+
+This section does not apply to most users. If you want to cross-compile PiSCSI from an Ubuntu host, you first need to install the cross compiler packages:
+
+```
+  sudo apt install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
+```
+
+To build for whatever target you're currently on
+
+```
+  make ARCH= CROSS_COMPILE= 
+```
+
+To build for x86_64 linux
+
+```
+  make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-
+```
+
+To explicitly build for ARM (ARM is also the default, so this shouldn't be necessary)
+
+```
+  make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-
+```
+
+= Compiling on x86/x86_64 Linux PCs =
+
+A lot of the rascsi code does not require the PiSCSI hardware and can be run and tested on a regular Linux PC. scsictl can be run on a Linux PC without restrictions and can access rascsi on the Pi remotely with the -h option.
+With these environment settings the complete PiSCSI code compiles with g++ or clang++ (faster than g++) on x86/x86_64 PCs:
+
+```
+   EXTRA_FLAGS="-DSPDLOG_FMT_EXTERNAL -DFMT_HEADER_ONLY"
+```
+
+Using the Eclipse IDE for development helps with browsing, refactoring and unit-testing the C++ code. The SonarLint plugin helps with working on code quality issues reported by SonarCloud, even though in contrast to the SonarCloud web UI it reports some false positives.
+
+
+<!-- 
+= In development..... use the PiSCSI disk image =
+<s>
+DRAFT****
+- Download the PiSCSI image
+- Unzip
+- Windows / MacOS
+  - Download [Balena Etcher](https://www.balena.io/etcher/)
+
+<a href="/piscsi/piscsi/wiki/images/image_setup/etcher_image_1.png"><img src="/piscsi/piscsi/wiki/images/image_setup/etcher_image_1.png" width="100" height="100"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/etcher_image_2.png"><img src="/piscsi/piscsi/wiki/images/image_setup/etcher_image_2.png" width="100"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/etcher_image_3.png"><img src="/piscsi/piscsi/wiki/images/image_setup/etcher_image_3.png" width="100"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/etcher_image_4.png"><img src="/piscsi/piscsi/wiki/images/image_setup/etcher_image_4.png" width="100"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_confirm_enable_ssh.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_confirm_enable_ssh.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_hostname.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_hostname.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_hostname_warning.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_hostname_warning.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_interface_options.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_interface_options.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_login.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_login.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_new_hostname.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_new_hostname.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_password.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_password.png"/></a>
+</s>
+
+
+<!-- <a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_setup_ssh.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_setup_ssh.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_setup_wifi.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_setup_wifi.png"/></a>
+<a href="/piscsi/piscsi/wiki/images/image_setup/raspi-config_system_options.png"><img src="/piscsi/piscsi/wiki/images/image_setup/raspi-config_system_options.png" width="10%"/></a> -->

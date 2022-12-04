@@ -1,0 +1,152 @@
+= Full Sized Versions =
+The table below shows the known versions of the PiSCSI hardware, and whether it has been tested with the Reloaded version of the PiSCSI software.
+
+[[images/assembly/IMG_9516.jpg | width=200px]]
+
+
+{| class="wikitable"
+! scope="col"| PiSCSI Hw Version
+! scope="col"| Connection Type
+! scope="col"| Tested and working?
+! scope="col"| Schematic
+! scope="col"| Gerbers
+! scope="col"| Comments
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_2p1 akuker 2.2]
+|FULLSPEC<br>(Initiator or Target)
+|YES
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_2p2_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p2/rascsi_2p2.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p2/gerbers/rascsi_2p2.zip Gerbers]
+|No major issues<br>5v/3v silkscreen captions swapped
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_2p3 akuker 2.3]
+|FULLSPEC<br>(Initiator or Target)
+|Yes
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_2p3_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p3/rascsi_2p3.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p3/gerbers/gerbers.zip Gerbers]
+|No known issues
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_2p4 akuker 2.4]
+|FULLSPEC<br>(Initiator or Target)
+|Yes
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_2p4_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p4/rascsi_2p4.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p4/gerbers/gerbers.zip Gerbers]
+|Added optional high-density connector for PowerBooks and [https://en.wikipedia.org/wiki/Berg_connector Berg] power connector.
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_2p5 akuker 2.5]
+|FULLSPEC<br>(Initiator or Target)
+|Yes
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_2p5_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/develop/hw/rascsi_2p5/rascsi_2p5.kicad_sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/develop/hw/rascsi_2p5/gerbers/rascsi_2p5b_gerbers.zip Gerbers]
+|Updated to make external activity LED brighter (bypassed the extra 2k resistor)
+|}
+
+= PiSCSI Target Board =
+The PiSCSI Target Board is a minimal spec , low component count DIY version intended for enclosed applications ( external scsi housings etc. )<br><br>
+[[https://levosretrocomputerprojects.co.uk/images/PiSCSI/20220219_144152.jpg | width=300px]]
+* Low component count
+* 50 pin ribbon connector only
+* No Parity
+* No Termination
+* Intended for DIY
+
+{| class="wikitable"
+! scope="col"| PiSCSI Hw Version
+! scope="col"| Connection Type
+! scope="col"| Tested and working?
+! scope="col"| Schematic
+! scope="col"| PCB
+! scope="col"| Comments
+|-
+|[https://www.levosretrocomputerprojects.co.uk/index.php/rascsi/rascsi-target-board Alan Leverett v1.0]
+|STANDARD spec<br> ( Target only )
+|YES
+|[https://levosretrocomputerprojects.co.uk/images/RaSCSI/min-spec.png PNG]
+|[https://www.pcbway.com/project/shareproject/RaSCSI_Target_Board_e1f340ee.html PCBWay]
+|No major issues.
+|-
+|
+|
+|
+|
+|
+|
+|}
+
+= PiSCSI Zero =
+The PiSCSI Zero is a compact version of the PiSCSI board that is intended for use with the Raspberry Pi Zero family. Differences from the Full Sized PiSCSI include:
+* Only has DB-25 connector. No ribbon cable connector.
+* Termination is always enabled. 
+* Smaller board size (same size as Raspberry Pi Zero)
+
+[[images/assembly_zero/IMG_0771.png | width=200px]]
+
+{| class="wikitable"
+! scope="col"| PiSCSI Hw Version
+! scope="col"| Connection Type
+! scope="col"| Tested and working?
+! scope="col"| Schematic
+! scope="col"| Gerbers
+! scope="col"| Comments
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_zero_1p0 akuker PiSCSI Zero 1.0]
+|FULLSPEC<br>(Initiator or Target)
+|YES
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_zero_1p0_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_zero_1p0/rascsi_zero.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_zero_1p0/gerbers/gerbers_rascsi_zero_1p0.zip Gerbers]
+|No major issues.
+|-
+|
+|
+|
+|
+|
+|
+|}
+
+= Obsolete / Deprecated Versions =
+
+{| class="wikitable"
+! scope="col"| PiSCSI Hw Version
+! scope="col"| Connection Type
+! scope="col"| Tested and working?
+! scope="col"| Schematic
+! scope="col"| Gerbers
+! scope="col"| Comments
+|-
+|[https://github.com/fran-cap/RASCSI-68kmlaver fran-cap 1.6d]
+|STANDARD<br>(Target Only)
+|[https://github.com/fran-cap/RASCSI-68kmlaver/issues/1 Partial]
+|[https://github.com/fran-cap/RASCSI-68kmlaver/blob/master/design%20files/Din25%20Ver/rascsi_din.sch Eagle]
+|N/A
+|Requires re-mapping of GPIO pins - doesn't match original GIMONS design
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_1p5 akuker 1.5]
+|STANDARD<br>(Target Only)
+|[https://github.com/piscsi/piscsi/issues/10 Yes - with Fix]
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_1p5_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_1p5/rascsi_din.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_1p5/gerber/gerber.zip Gerbers]
+|Cut/Jump required to get this board to work
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_1p6 akuker 1.6]
+|STANDARD<br>(Target Only)
+|Not Tested
+|[https://github.com/piscsi/piscsi/wiki/sch/rascsi_1p6_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_1p6/rascsi_din.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_1p6/gerber/gerber.zip Gerbers]
+|Same as 1.5, but with fix for [https://github.com/piscsi/piscsi/issues/10 Issue 10]. *Should* work, but is currently untested.
+|-
+|[https://github.com/piscsi/piscsi/tree/master/hw/rascsi_2p1 akuker 2.1]
+|FULLSPEC<br>(Initiator or Target)
+|NO
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p1/rascsi_2p1_sch.pdf PDF]<br>
+[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p1/rascsi_2p1.sch KiCad]
+|[https://github.com/piscsi/piscsi/blob/master/hw/rascsi_2p1/gerber/gerber.zip Gerbers]
+|Several issues, including the connector being flipped. Not recommended for ANYONE to use
+|}

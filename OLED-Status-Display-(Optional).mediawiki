@@ -1,0 +1,128 @@
+= Overview =
+You can optionally attach an OLED display to monitor the status of PiSCSI. This can be especially useful when running "headless" (without a monitor). The PiSCSI board (akuker version) has the I2C bus available on a header, as well as 3.3v power and ground. 
+
+[[images/OLED_on_RaSCSI.jpg | 10x]]
+
+Currently the following OLEDs are known to work:
+* [https://www.makerfocus.com/collections/oled/products/2pcs-i2c-oled-display-module-0-91-inch-i2c-ssd1306-oled-display-module-1 MakerFocus SSD1306 128x32 OLED]
+* [https://www.makerfocus.com/collections/oled/products/4pcs-i2c-oled-0-96-inch-display-module-with-du-pont-wire-40-pin-for-arduino-uno-r3-stm MakerFocus SSD1306 128x64 OLED]
+* [https://www.az-delivery.de/en/products/0-91-zoll-i2c-oled-display AZDelivery 0.91 inch OLED I2C display 128 x 32 pixels ]
+
+If you're using a different OLED, '''make sure that it will run at 3.3v'''. Some only work with 5v controllers (such as the Arduino)
+
+For example, here is the display when PiSCSI is configured with two devices on SCSI ID 1 and 6. This shows when there is no CD-ROM in the virtual drive.
+
+[[images/OLED_no_media.jpg]]
+
+By executing the following command, the ISO image will on the display...
+  scsictl -i 6 -c insert -f /home/pi/marathon.iso
+[[images/OLED_with_media.jpg]]
+
+= How to install =
+== Hardware install ==
+Ensure that your display matches the pinout on the PiSCSI board:
+
+{|
+|Pin
+|Signal
+|-
+|1
+|5v (not used)
+|-
+|2
+|Ground
+|-
+|3
+|3.3v
+|-
+|4
+|I2C Clock (SCL)
+|-
+|5
+|I2C Data (SDA)
+|}
+''Note: Pin 1 is the furthest away from the Raspberry Pi GPIO header.''
+
+'''''Important:''''' ''The Raspberry Pi I2C bus is designed to operate at 3.3v levels. Do not use a 5v OLED and expect it to work!''
+
+You will need to solder a pin header on your OLED board (if it didn't come with one). Then, plug it into J4 on the PiSCSI board.
+
+''If you're really brave, you could solder the OLED board directly to the PiSCSI board.''
+
+== Software Install ==
+
+You can use the ''easyinstall.sh'' script to automatically install the OLED Display software.
+
+Below follows the manual steps to install it.
+
+* Install required packages
+  sudo apt install python3-pip python3-pil python3-venv libjpeg-dev libpng-dev libopenjp2-7-dev i2c-tools -y
+* Enable i2c
+  sudo raspi-config
+  Select 3 “Interfacing Options”
+  Highlight the “I2C” option and activate “<Select>”
+  reboot
+* Verify your screen is connected
+  i2cdetect -y 1
+  you should see your module at address 0x3c; if not check your cabling:
+       0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+  00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+  10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  30: -- -- -- -- -- -- -- -- -- -- -- -- 3c -- -- --
+  40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+  70: -- -- -- -- -- -- -- -- 
+* Clone the PiSCSI git repository and install PiSCSI (if you haven't already, follow the [[setup instructions]])
+* Install python libraries
+  cd ~/piscsi/python/oled
+* Make a virtual environment called venv
+  python3 -m venv venv
+* Activate the newly created environment
+  source venv/bin/activate
+* Install the dependencies
+  sudo pip3 install -r requirements.txt
+* Try running it to verify it works. (You will need the OLED connected and PiSCSI running for this to work)
+  PYTHONPATH=$PWD/src:$(dirname $PWD)/common/src python3 src/rascsi_oled_monitor.py
+* Or, so start with the display rotated 0 degrees and 64px vertical resolution:
+  PYTHONPATH=$PWD/src:$(dirname $PWD)/common/src python3 src/rascsi_oled_monitor.py --rotation 0 --height 64
+
+'''Note:''' The script takes exactly two positional parameters: Rotation and vertical resolution. Rotation can be one of 0 or 180 degrees. Vertical resolution can be one of 32 or 64 pixels. You have to pass both to take effect. Without parameters, the script will default to 180 degrees rotation and 32px vertical resolution.
+
+=== Create a systemd service to automatically run ===
+
+Copy the systemd service description file using the following command:
+ sudo cp ~/piscsi/python/oled/service-infra/rascsi-oled.service /etc/systemd/system/
+
+After you've installed the monitor_rascsi.service file, you'll need to enable it with the following command:
+ sudo systemctl enable rascsi-oled.service
+
+''Note: If you modify the monitor_rascsi.service file later, you will need to run "sudo systemctl daemon-reload"''
+
+You can start the service (without rebooting) using the following command:
+ sudo systemctl rascsi-oled.service
+
+When you run 'systemctl status rascsi-oled.service', it should be reported that the PiSCSI Monitor is Loaded and Active:
+```
+pi@rascsi:~/piscsi/python/oled $ sudo systemctl status rascsi-oled.service
+● rascsi-oled.service - PiSCSI-OLED service
+   Loaded: loaded (/etc/systemd/system/rascsi-oled.service; disabled; vendor preset: enabled)
+   Active: active (running) since Wed 2022-02-09 15:29:00 CET; 49s ago
+ Main PID: 13827 (bash)
+    Tasks: 2 (limit: 877)
+   CGroup: /system.slice/rascsi-oled.service
+           ├─13827 bash /home/pi/piscsi/python/oled/start.sh
+           └─13845 python3 src/rascsi_oled_monitor.py
+
+feb 09 15:29:00 rascsi systemd[1]: Started PiSCSI-OLED service.
+feb 09 15:29:22 rascsi RASCSIMON[13827]: Starting OLED Screen...
+feb 09 15:29:22 rascsi RASCSIMON[13827]: No screen rotation parameter given; falling back to the default.
+feb 09 15:29:22 rascsi RASCSIMON[13827]: No screen height parameter given; falling back to the default.
+```
+= Additional Details =
+* Adafruit introduction to SSD1306 OLED displays: [https://learn.adafruit.com/ssd1306-oled-displays-with-raspberry-pi-and-beaglebone-black]
+* Adafruit library used for this python script: [https://github.com/adafruit/Adafruit_Python_SSD1306]
+* OLED Schematic: [http://github.com/piscsi/piscsi/wiki/images/OLED_Schematic.jpg]
+* OLED Users Manual: [https://drive.google.com/open?id=14A_luFwqvZaKu-PKTfJdWmUZ4T4Wk65]
+

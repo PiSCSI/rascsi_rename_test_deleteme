@@ -1,0 +1,362 @@
+= Congratulations on your purchase! =
+
+If you are reading this page, it is most likely because you have purchased the PiSCSI kit (full sized version). Alternatively, you've ordered the PCBs and procured the parts to build the PiSCSI pHAT for your Raspberry Pi. Either way, the following instructions are provided on how to assemble your new PiSCSI Reloaded board.
+
+Note that PiSCSI was originally called "RaSCSI Reloaded". There are no differences in the hardware between "PiSCSI Reloaded" and PiSCSI!. 
+
+If you have the PiSCSI Zero version, see the assembly instructions [https://github.com/piscsi/PiSCSI/wiki/PiSCSI-Zero-Assembly here]
+
+If you have not yet purchased one, you can pick up your very own PiSCSI Reloaded board on [https://www.tindie.com/products/landogriffin/rascsi-macintosh-version/ Tindie].
+
+__TOC__
+
+= Kit contents =
+
+The PiSCSI kit available on [https://www.tindie.com/products/landogriffin/rascsi-macintosh-version/ Tindie] contains everything you need to get going. In your package, you should see the following. Note that the Daisy Chain Daughter Board is an optional add-on. It might not be included in your order.
+
+{|
+|[[images/assembly/IMG_9510.jpg | width = 709px height = 533px]]
+|[[images/assembly/IMG_9512.jpg | width = 709px height = 533px]]
+|}
+
+Regardless if you are building from a kit, or purchased your own parts, confirm you have the following components before assembly. 
+
+{|
+|'''Quantity'''
+|'''Image'''
+|'''Description'''
+|'''Link'''
+|-
+|1
+|[[images/assembly/rascsi_main_board.png | width = 200px]] 
+|PiSCSI Main Board with Resistors & LEDs<BR>
+pre-installed
+|[https://www.tindie.com/products/landogriffin/rascsi-macintosh-version/ Tindie]
+|-
+|1
+|[[images/assembly/db25_connector.jpg | width = 200px]]
+|DB-25 Connector
+|[https://lcsc.com/product-detail/D-Sub-Connectors_CONNFLY-Elec-DS1037-25FNAKT74-0CC_C77838.html LCSC]
+|-
+|4
+|[[images/assembly/SN74LS641.jpg | width = 200px]]
+|SN74LS641-1DW transceivers
+|[https://www.ti.com/store/ti/en/p/product/?p=SN74LS641-1DW Texas Instruments]
+|-
+|1
+|[[images/assembly/switches.png | width = 200px]]
+|Surface mount switches
+|[https://lcsc.com/product-detail/DIP-Switches_Dongguan-Guangzhu-Industrial-DSHP02TSGET_C40735.html LCSC]
+|-
+|2
+|[[images/assembly/male-header-pins-40-pins-500x500.jpg | width = 200px]]
+|Breakaway pin headers
+|[https://lcsc.com/product-detail/Pin-Header-Female-Header_BOOMELE-Boom-Precision-Elec-2-54mm-1x40P_C2337.html LCSC]
+|-
+|1
+|[[images/assembly/50-pin.png | width = 200px]]
+|50-pin male box header
+|[https://lcsc.com/product-detail/IDC-Connectors_BOOMELE-Boom-Precision-Elec-C30006_C30006.html LCSC]
+|-
+|1
+|[[images/assembly/40-pin.png | width = 200px]]
+|40-pin female header
+|[https://lcsc.com/product-detail/Pin-Header-Female-Header_BOOMELE-Boom-Precision-Elec-C50982_C50982.html LCSC]
+|-
+|1
+|[[images/assembly/microusb.jpg | width = 200px]]
+|Micro USB connector
+|[https://lcsc.com/product-detail/USB-Connectors_XKB-Connectivity-U254-051N-4BH806_C319170.html LCSC]
+|}
+
+== Optional Components ==
+=== Daisy Chain Daughter Board ===
+{|
+|'''Quantity'''
+|'''Image'''
+|'''Description'''
+|'''Link'''
+|-
+|1 (Optional)
+|[[images/assembly/rascsi_daisy_chain.png | width = 200px]]
+|PiSCSI Daisy Chain Daughter Board
+|[https://www.tindie.com/products/landogriffin/rascsi-macintosh-version/ Tindie]
+|-
+|1
+|[[images/assembly/db25_connector.jpg | width = 200px]]
+|DB-25 Connector
+|[https://lcsc.com/product-detail/D-Sub-Connectors_CONNFLY-Elec-DS1037-25FNAKT74-0CC_C77838.html LCSC]
+|-
+|1
+|[[images/assembly/50_pin_long.jpg | width = 200px]]
+|50-pin female header with<BR>
+extra long pins
+|[https://www.aliexpress.com/item/32994167835.html?spm=a2g0s.9042311.0.0.48d64c4drthCXv Aliexpress]
+|}
+
+=== Stand-offs ===
+Mounting holes have been placed in the PiSCSI board to attach it securely to any of the supported Raspberry Pi models.  M2.5 standoffs can be purchased to affix your PiSCSI to the Raspberry Pi from [https://www.amazon.com/HVAZI-320pcs-Standoffs-assortment-Male-Female/dp/B06XKWDSPT/ Amazon]
+
+=== OLED Screen ===
+A header is included for mounting an optional OLED screen to the PiSCSI board. The recommended OLED screen is [https://github.com/piscsi/piscsi/wiki/OLED-Status-Display-(Optional)#Overview MakerFocus SSD1306]. Other models may be compatible, but this version has been tested with the python script included in the [https://github.com/piscsi/piscsi/tree/master/src/oled_monitor PiSCSI github repo].
+
+= Orientation options =
+
+{|
+|<PRE>
+
+The PiSCSI Reloaded board has been designed to work with multiple
+Raspberry Pi models. With that, you have two options on how to
+attach the PiSCSI pHAT to the Raspberry Pi. 
+
+This image shows these two options, one with the PiSCSI mounted
+above and the other showing the PiSCSI mounting below.
+
+Deciding how you want to orient your Raspberry Pi to the PiSCSI
+impacts which way you install the 50-pin female header listed
+under Kit contents.
+
+Note that, if you put the 40-pin header on the top of PiSCSI to
+accommodate a Raspberry Pi Zero: the pin headers for the Zero 
+will need to be soldered to the bottom of the PCB (the pins 
+should be on the side without the SD card/USB ports). This is 
+not the typical location and, if you have a Zero WH model (with 
+the header pre-soldered), the pins will be on the wrong side of 
+the board.
+
+</PRE>
+|[[images/assembly/Assembly_Options.png]]
+|}
+
+= Board layout and connections =
+
+{|
+|<PRE>
+
+Before assembling, you should get familiar with the circuit
+board. This image shows some important connection points
+on the PiSCSI board.
+
+</PRE>
+|[[images/assembly/PiSCSI_Options.png]]
+|}
+
+
+
+
+{|
+|<PRE>
+
+As a general convention, the FEMALE socket is usually pointing down and the MALE pins are pointing up.
+
+</PRE>
+|[[https://user-images.githubusercontent.com/34318535/154880911-60ac03dd-ab4c-47fb-96e7-a8933c5d99f8.png]]
+|}
+
+
+
+= Assembly Instructions =
+
+{|
+|<PRE>
+
+This image shows all of the components we will attach to
+the main PCB.
+
+A good workflow when assembling electronics is to attach
+the smallest components first and finish up with the largest
+components.
+
+These instructions will follow that workflow.
+
+</PRE>
+|[[images/assembly/rascsi_exploded.png]]
+|}
+
+== Install the USB Port ==
+
+After receiving some feedback, it was determined to be easier to install the USB port first. By putting the USB port in place first, you have better access to the USB port pins for soldering.  In the images below you will see the transceivers installed, but fear not, you will want to put the USB port on first, then install the transceivers, covered in the next step.
+
+{|
+|Clean and prep the pads for the USB connector, and apply flux.
+|[[images/assembly/WIN_20200905_19_11_59_Pro.jpg | width = 500px]]
+|-
+|Locate the USB connector in the holes.<BR>
+The connector should also center the pins on the pads nicely.
+|[[images/assembly/WIN_20200905_19_12_18_Pro.jpg | width = 500px]]
+|-
+|Solder the top pins in place.
+|[[images/assembly/WIN_20200905_19_14_04_Pro.jpg | width = 500px]]
+|-
+|And finally solder the bottom pins in place.
+|[[images/assembly/WIN_20200905_19_14_59_Pro.jpg | width = 500px]]
+|-
+|}
+
+== Install Transceivers ==
+
+If you're doing this assembly in order, the previous step covered installing the USB port. The following section covers installing the transceivers. The images show the USB port not installed. These pictures were taken before reorganizing the assembly steps, and you should have already installed the USB port. 
+
+{|
+|'''Note:''' Several people have had a common mistake while<BR>
+assembling their PiSCSI the first time. Please make a special<BR>
+note of the orientation of IC1 and IC2 vs IC3 and IC4<BR>
+(the transceivers). Don't assume that they are all oriented the<BR>
+same way. Check that the dot on the chip (indicating pin 1)<BR>
+matches the circle on the board.
+|[[images/assembly/rotated_transceivers.png]]
+|-
+|Make sure the PCB is clean of debris.<BR><BR>A quick wipe down with Isopropyl Alcohol 99% will work.
+|[[images/assembly/WIN_20200905_18_36_37_Pro.jpg | width = 500px]]
+|-
+|Apply some flux to the pads you're affixing the transceiver to.
+|[[images/assembly/WIN_20200905_18_37_32_Pro.jpg | width = 500px]]
+|-
+|An even coating is good.
+|[[images/assembly/WIN_20200905_18_37_56_Pro.jpg | width = 500px]]
+|-
+|To speed the process up, you could apply flux to all pads to be soldered. This may speed up assembly.
+|[[images/assembly/IMG_9514.jpg | width = 500px]]
+|-
+|Place the component, checking that the pins line up with the pads nicely.<BR><BR>
+'''Note:''' Also ensure the dimple on the transceiver matches up with the circle on the silkscreen.<BR><BR>
+This is discussed at the top of this section.
+|[[images/assembly/WIN_20200905_18_39_11_Pro.jpg | width = 500px]]
+|-
+|Tack two corners in place, and double check your alignment<BR><BR>
+If everything looks good, solder the transceiver in place.<BR><BR>
+This process requires very little solder. Loading up your tip<BR>
+or the pins with lots of solder will make extra work when you<BR>
+have to remove solder bridges.
+|[[images/assembly/WIN_20200905_18_39_51_Pro.jpg | width = 500px]]
+|-
+|Check all of your solder joints for bridges.
+|[[images/assembly/WIN_20200905_18_42_18_Pro.jpg | width = 500px]]
+|-
+|Use some solder braid or your favourite desoldering tool<BR>
+to remove the extra solder.
+|[[images/assembly/WIN_20200905_18_43_07_Pro.jpg | width = 500px]]
+|-
+|Check for any additional solder bridges and remove if necessary.
+|[[images/assembly/WIN_20200905_18_43_59_Pro.jpg | width = 500px]]
+|-
+|Admire your handy work.  Good job!
+|[[images/assembly/WIN_20200905_18_44_40_Pro.jpg | width = 500px]]
+|-
+|}
+
+With the first transceiver attached, do it three more times.  But please ''please'' '''''please''''' heed the notice at the [https://github.com/piscsi/piscsi/wiki/Assembly#Install_Transceivers top of this section]. 
+
+== Install Terminator Power Switch ==
+
+{|
+|Clean the pads for S1 making sure there is no debris.<BR><BR>
+Apply flux as you did when installing the transceivers. <BR>
+In this image, the flux is barely visible, almost like it's not there.<BR>
+|[[images/assembly/WIN_20200905_18_55_02_Pro.jpg | width = 500px]]
+|-
+|Locate the switch on the pads. and solder it in place. On should be facing the Raspberry logo.
+|[[images/assembly/WIN_20200905_18_56_09_Pro.jpg | width = 500px]]
+|-
+|You're doing great!  Keep going!
+|[[images/assembly/WIN_20200905_18_58_19_Pro.jpg | width = 500px]]
+|-
+|}
+
+== Checking your work ==
+
+{|
+|With the above components in place, you're on the home stretch.<BR>
+Check over the board for any solder bridges now, as they're easy<BR>
+to remove now then later when the unit gets plugged into your computer.<BR><BR>
+The board should look similar to this.
+|[[images/assembly/IMG_9515.jpg | width = 500px]]
+|}
+
+== Correction for issue # 672 ==
+
+There is a potential issue with the PiSCSI (aka PiSCSI reloaded) board versions 2.4 and 2.5 when it is assembled with the DB-25 connector. If you are installing the DB-25 connector on your board, it is highly recommended that you make a small "cut" on your board. Over time, it appears that the DB-25 shield will wear through the solder mask and may come into contact with the 5v signal right below it. This essentially shorts 5v to Ground. Making this small cut will prevent this from happening.
+
+https://github.com/piscsi/piscsi/issues/672
+
+
+{|
+|
+Use a razor blade or exacto knife to cut the copper trace under the green solder mask on the top of the PiSCSI board. 
+<BR><BR>
+(Make sure there is no power applied to the PiSCSI board.)
+<BR><BR>
+A short video on how to cut a trace on a circuit board is available here:<BR>
+https://www.youtube.com/watch?v=hT41OF4UX6Y<BR>
+|[[images/issue_672_workaround.png]]
+|}
+
+== Solder DB-25 and 50 pin SCSI connectors ==
+
+Now we proceed soldering up both the DB-25 and 50 pin SCSI connectors
+
+{|
+|Place the 50-pin male box header and DB-25 connector.<BR><BR>
+'''Note:''' Be sure the key on the 50 pin connector faces the DB-25 connector.  
+|[[images/assembly/IMG_9516.jpg | width = 500px]]
+|-
+|And solder them in from the bottom.
+|[[images/assembly/IMG_9517.jpg | width = 500px]]
+|-
+|}
+
+== Solder the Raspberry Pi interface connector ==
+
+'''Note:''' This section is currently being populated 
+
+
+
+== Solder the optional activity LED connector ==
+
+'''Note:''' This section is currently being populated.
+
+
+
+
+
+== Solder the Daisy Chain Daughter Board ==
+
+If your kit included, or you purchased it separately, the next steps cover assembling the Daisy Chain Daughter Board.
+
+'''Note:''' You will find this next step easier if you install the 50 pin connector first, followed by the DB-25 connector. If you install the DB-25 connector first, it cramps the area you need to solder in the 50 pin connector.  In the event you have already installed the DB-25 connector first, when you go to install the 50 pin header, first solder in the 'easy' row of pins, trim them to length, then solder in the remaining row of pins, and trim them.
+
+'''Important:''' Before starting to solder the connectors, make sure the daughter board is in the right orientation, by looking at the silkscreen markings.  The TOP side should be facing upwards, and the BOTTOM downwards.
+
+{|
+|Place the female 50pin connector on the BOTTOM side of the daughter board and solder in place.
+|[[images/assembly/IMG_9519.jpg | width = 500px]]
+|-
+|Once done, place the second DB-25 connector on the TOP side of the daughter board, and solder in place.
+|[[images/assembly/IMG_9521.jpg | width = 500px]]
+|-
+|Once done, clip the extra pin length from the 50pin connector.
+|[[images/assembly/IMG_9520.jpg | width = 500px]]
+|-
+|You're done!<BR><BR>
+Do a quick test fit to make sure the daughter board<BR>
+attaches to the main board properly.<BR><BR>
+In this example the pins were not trimmed.<BR>
+They were trimmed shortly after taking the picture.
+|[[images/assembly/IMG_9522.JPG | width = 500px]]
+|-
+|}
+
+
+== Connect it all together ==
+
+'''Note:''' This section is currently being populated.
+
+
+
+
+
+= You're done! =
+
+If you've gotten to this point, your PiSCSI board and optional daughter board are ready to use.
+
+Proceed to the [https://github.com/PiSCSI/piscsi/wiki/Setup-Instructions Setup Instructions] page.

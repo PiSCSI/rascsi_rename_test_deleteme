@@ -1,0 +1,268 @@
+= Hardware troubleshooting =
+
+== Schematics ==
+Schematics for the PiSCSI Reloaded are available in pdf format. Choose the one that corresponds to the hardware revision of your particular board.
+
+=== Full-size ===
+* [/piscsi/piscsi/wiki/sch/rascsi_1p5_sch.pdf 1p5]
+* [/piscsi/piscsi/wiki/sch/rascsi_1p6_sch.pdf 1p6]
+* [/piscsi/piscsi/wiki/sch/rascsi_2p2_sch.pdf 2p2]
+* [/piscsi/piscsi/wiki/sch/rascsi_2p3_sch.pdf 2p3]
+* [/piscsi/piscsi/wiki/sch/rascsi_2p4_sch.pdf 2p4]
+* [/piscsi/piscsi/wiki/sch/rascsi_2p5_sch.pdf 2p5]
+
+=== Zero ===
+* [/piscsi/piscsi/wiki/sch/rascsi_zero_1p0_sch.pdf 1p0]
+
+== Termination ==
+First step in troubleshooting is to check the termination. Seriously. Check this.
+
+https://lowendmac.com/1998/termination-explained/
+
+== Check the Termination again ==
+Re-check it again.
+
+== Loopback Testing ==
+A way to check out the PiSCSI hardware is to create a loopback cable. This can be done using jumper wires or a specially-constructed DB25 male jack connector can be created to allow easy re-use.
+
+[[images/loopback_picture.jpg | height = 150px]][[images/loopback_option_2.jpg | height=200px]]
+
+The diagram for the loopback connections is shown here. Note that the PiSCSI connector is a FEMALE connector. If you are using a gender changer (as in the previous picture), you want to use the MALE connector pinout
+
+{|
+| '''FEMALE connector pinout''' <a href="images/SCSI_Loopback_Female.png">[[images/SCSI_Loopback_Female.png]]</a>
+| '''MALE connector pinout''' <a href="images/SCSI_Loopback_Male.png">[[images/SCSI_Loopback_Male.png]]</a>
+|}
+[https://drive.google.com/file/d/1LOT1FmA7XpJ3NWiGojUwsjnxTC_x_HD8/view?usp=sharing Link to original drawing]
+
+Once you have the loopback connections made, you can checkout the PiSCSI source code and run the loopback test python script. (Note: This requires python3 to run)
+	
+'''Before running this test:'''
+
+- '''Ensure that you have termination enabled before running this test!!'''
+
+- '''Ensure that the PiSCSI service is NOT running''' `sudo systemctl stop rascsi`
+
+- '''Double check your loopback that you do NOT have TERM POWER connected to Ground!!!'''
+
+[[images/mackey.jpg | height = 250px]]
+
+```
+cd ~
+git clone https://github.com/piscsi/piscsi.git
+cd ~/piscsi
+# FOR NOW, the code is only available on the 'develop' branch
+git checkout develop
+cd ~/piscsi/src/loopback_test/
+pip install RPi.GPIO
+./test.py
+```
+
+The Python test script will list all of the SCSI signals that are not working properly. You can the use the [https://github.com/piscsi/piscsi/raw/master/hw/rascsi_2p3/rascsi_2p3_sch.pdf schematic]to debug if there are any broken traces, lifted pads or bad solder joints.
+
+Note: this concept was original created by Saybur for the Scuznet board: https://github.com/saybur/scuznet/tree/master/testing
+
+=== Example Successful Test Run ===
+[[images/loopback_test_success.png]]
+
+=== Example Test Run With Failures ===
+[[images/loopback_test_failed.png]]
+
+In this case, there is something wrong with either the "C/D" SCSI signal or the "D4" SCSI data line or both.
+
+== Multimeter Testing ==
+You can test each individual SCSI signal using a multimeter. This procedure is listed here.
+
+Turn on the termination DIP switches
+
+Pull out your trusty multimeter. With the PiSCSI software running, disconnect all SCSI devices and check the voltages:
+* TPWR should be 5v
+* D0-D7 should be around 3.08v
+* Control signals should be around 3.08v
+
+STOP the PiSCSI service `sudo systemctl stop rascsi`. 
+
+* Check the LEDS
+ raspi-gpio set 4 op dh #  ACT LED should be ON
+ raspi-gpio set 4 op dl #  ACT LED should be OFF
+ raspi-gpio set 5 op dh #  ENB LED should be ON
+ raspi-gpio set 5 op dl #  ENB LED should be OFF
+
+* Set the direction of the transceivers to be outputs
+ raspi-gpio set 8 op dl #PI-DTD is GPIO 8 - set LOW for Pi->SCSI output
+ raspi-gpio set 6 op dh #PI-IND is GPIO 6 - set HIGH for Pi->SCSI output
+ raspi-gpio set 7 op dh #PI-TAD is GPIO 7 - set HIGH for Pi-SCSI output
+
+* Check Data 0
+ raspi-gpio set 10 op dh # D0 output should be around 3v
+ raspi-gpio set 10 op dl # D0 output should be around 0v
+
+* Repeat for all of the other data and control signals
+
+ raspi-gpio set <GPIO> op dh # <Signal> output should be around 3v
+ raspi-gpio set <Signal> op dl # <Signal> output should be around 0v
+
+{|
+|Signal   
+|GPIO 
+|Direction Control 
+|Direction: Pi->SCSI     
+| Direction: SCSI->PI    
+|- 
+|D0 
+|10
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D1 
+|11
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D2 
+|12
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D3 
+|13
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D4 
+|14
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D5 
+|15
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D6 
+|16
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|D7 
+|17
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|DP 
+|18
+|DTD (GPIO 8)
+|<code>raspi-gpio set 8 op dl</code> 
+|<code>raspi-gpio set 8 op dh</code> 
+|- 
+|I/O
+|25
+|TAD (GPIO 7)
+|<code>raspi-gpio set 7 op dh</code> 
+|<code>raspi-gpio set 7 op dl</code> 
+|- 
+|REQ
+|22
+|TAD (GPIO 7)
+|<code>raspi-gpio set 7 op dh</code> 
+|<code>raspi-gpio set 7 op dl</code> 
+|- 
+|C/D
+|24
+|TAD (GPIO 7)
+|<code>raspi-gpio set 7 op dh</code> 
+|<code>raspi-gpio set 7 op dl</code> 
+|- 
+|MSG
+|23
+|TAD (GPIO 7)
+|<code>raspi-gpio set 7 op dh</code> 
+|<code>raspi-gpio set 7 op dl</code> 
+|- 
+|BSY
+|26
+|TAD (GPIO 7)
+|<code>raspi-gpio set 7 op dh</code> 
+|<code>raspi-gpio set 7 op dl</code> 
+|- 
+|SEL
+|27
+|IND (GPIO 6)
+|<code>raspi-gpio set 6 op dh</code> 
+|<code>raspi-gpio set 6 op dl</code> 
+|- 
+|RST
+|20
+|IND (GPIO 6)
+|<code>raspi-gpio set 6 op dh</code> 
+|<code>raspi-gpio set 6 op dl</code> 
+|- 
+|ACK
+|21
+|IND (GPIO 6)
+|<code>raspi-gpio set 6 op dh</code> 
+|<code>raspi-gpio set 6 op dl</code> 
+|- 
+|ATN
+|19
+|IND (GPIO 6)
+|<code>raspi-gpio set 6 op dh</code> 
+|<code>raspi-gpio set 6 op dl</code> 
+|-
+|}
+
+
+== SCSI cable issues ==
+
+SCSI is sensitive to cable length and cabling quality issues. If you are experiencing failures with certain operations in your sampler, try using a shorter cable! Note that failures may not necessarily show up as errors in the PiSCSI logs, since it might be sending messages perfectly fine that are being lost in transit.
+
+= Software =
+== SPDLOG compile error ==
+If you see an error like the following, your Raspberry Pi OS may be too old.
+
+```
+log.h:22:3: error: ‘log’ is not a member of ‘spdlog’
+   spdlog::log(loglevel,buf);}while(0);
+```
+
+The easiest approach would be to generate a new SD card with the latest version of Raspberry Pi OS, using the Raspberry Pi Imager (https://www.raspberrypi.org/software/). You can also try to update libspdlog-dev to a newer version.
+
+You can check which version of spdlog you're using with the following command:
+
+```
+pi@rascsi:~ $ sudo apt search libspdlog
+Sorting... Done
+Full Text Search... Done
+libspdlog-dev/stable,now 1:1.3.1-1+rpi1 armhf [installed]
+  Very fast, header only, C++ logging library
+
+pi@rascsi:~ $
+```
+
+== Network Interface Instability ==
+
+You may find that the network interface that your Pi is using to connect to your LAN and the internet keeps getting pulled down and restarted, causing temporary connectivity interruptions. While the root cause is not known at the time of writing, a workaround that has been proven effective is to disable network interfaces that you don't actively use, e.g. wlan and bluetooth if you're using eth.
+
+This can be achieved by appending the following to the bottom of <tt>/boot/config.txt</tt> and rebooting your Pi (for disabling wlan and bluetooth):
+
+```
+dtoverlay=disable-bt
+dtoverlay=disable-wifi
+```
+
+== The PiSCSI is behaving erratically ==
+
+If your PiSCSI setup is starting up but behaving erratically, it may not be getting enough power from the power supply or SCSI bus. Symptoms include the network interface going down randomly, or the SCSI host not recognizing attached devices due to lack of termination power.
+
+One way to determine that the Raspberry Pi isn't getting enough power, is to observe the syslog and look for <code>Under-voltage detected!</code> messages.
+
+It is recommended to use a known good power supply rated for at least 5V / 2.5 amps -- maybe even higher for overclocked or more powerful future generations of Raspberry Pis.
+

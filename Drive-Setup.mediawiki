@@ -1,0 +1,440 @@
+= Creating and attaching disk images =
+
+This section digs into creating hard drive images, checking SCSI IDs, and presenting images with PiSCSI. This document assumes you have completed the [[Full Size PiSCSI Assembly|full size]] or [[PiSCSI Zero Assembly|Zero]] assembly of your PiSCSI (if needed), have the software covered in the [[Setup Instructions]] page and connected your PiSCSI as described in the [[Connecting the PiSCSI]] instructions.  If you're starting here, consider checking those documents before proceeding.
+
+__TOC__
+
+= Creating and attaching an empty SCSI hard drive image =
+
+Boiled down, PiSCSI simply presents one or more files on the Raspberry PI file system as SCSI Disks. So you will create or already have a file somewhere on your Raspberry Pi, use scsictl to presents it as a disk on the SCSI Bus, then your computer treats it like a hard drive, MO disk, CD Rom, etc.  This document talks about creating images, presenting them with PiSCSI on the SCSI Bus, and how to use them on your target computer.
+
+== Initial setup ==
+
+These instructions assume you store images in <code>/home/pi/images</code> directory. In the event it does not already exist, lets create it. Run the following commands on your Raspberry Pi to create <code>/home/pi/image</code>.
+
+```
+mkdir /home/pi/images
+ls -lad /home/pi/images
+```
+
+You should see the following after running the above.
+
+```
+pi@raspberrypi:~ $ mkdir /home/pi/images
+pi@raspberrypi:~ $ ls -lad /home/pi/images
+drwxr-xr-x 2 pi pi 4096 Sep 11 00:05 /home/pi/images
+```
+With that out of the way, the following steps should work properly.
+
+== Create a new (empty) Hard Drive image ==
+To start, your new hard drive image can be a file full of zeros. This basic walk through goes over creating a new file using the Linux <code>dd</code> utility on your Pi.  If you are looking for additional information on how to use dd, check out the [https://en.wikipedia.org/wiki/Dd_%28Unix%29 Wikipedia article], or read the man page.
+
+Run the following commands to create an empty hard drive image named <code>/home/pi/images/new_drive.hda</code>
+
+```
+dd if=/dev/zero of=/home/pi/images/new_drive.hda bs=4M count=100
+ls -la /home/pi/images/new_drive.hda
+```
+
+Output from the above commands should look like this
+
+```
+pi@raspberrypi:~ $ dd if=/dev/zero of=/home/pi/images/new_drive.hda bs=4M count=100
+100+0 records in
+100+0 records out
+419430400 bytes (419 MB, 400 MiB) copied, 39.3795 s, 10.7 MB/s
+pi@raspberrypi:~ $ ls -la /home/pi/images/new_drive.hda
+-rw-r--r-- 1 pi pi 419430400 Sep 11 04:50 /home/pi/images/new_drive.hda
+```
+
+In the above example, ''bs'' is the block size, and ''count'' is the number of blocks. The above command will create an empty 400MB (4M x 100) image located at <code>/home/pi/images/new_drive.hda</code>. If bs is not specified, <code>dd</code> will use the default block size of 512, and you will need to adjust the count. Setting bs to 4M will speed up the file creation significantly. 
+
+
+In case the fallocate command is available a much faster alternative to the dd command is
+
+```
+fallocate -l 419430400 /home/pi/images/new_drive.hda
+ls -la /home/pi/images/new_drive.hda
+```
+
+The image size is specified in bytes.
+
+== Check existing SCSI IDs ==
+
+Once you have the image created, we need to find an unused SCSI ID to attach the image to. Use <code>scsictl -l</code> to list the current SCSI IDs being used by PiSCSI.
+
+```
+scsictl -l
+```
+
+For a new installation, you should see an output similar to the following.
+
+```
+pi@raspberrypi:~ $ scsictl -l
+No images currently attached.
+```
+
+From the output above, we see PiSCSI is using no SCSI IDs. We will use ID 1 to attach our newly created 400MB image. 
+
+'''Note:''' <code>scsictl -l</code> only shows SCSI IDs presented via PiSCSI. It does not report other devices on the SCSI bus. You will want to use a utility or tool on your target computer to find what SCSI IDs are available to use. For example, Macintosh computers reserve SCSI ID 7 the onboard SCSI controller.
+
+== Attach new image to an unused SCSI ID ==
+
+The next two commands will attach the new_drive.hda to SCSI ID 1, then show a list of the currently attached images.
+
+```
+scsictl -i 1 -c attach -t hd -f /home/pi/images/new_drive.hda
+scsictl -l
+```
+
+And once done, you should see something similar to ...
+
+```
+pi@raspberrypi:~ $ scsictl -i 1 -c attach -t hd -f /home/pi/images/new_drive.hda
+pi@raspberrypi:~ $ scsictl -l
+
++----+-----+------+-------------------------------------
+| ID | LUN | TYPE | IMAGE FILE
++----+-----+------+-------------------------------------
+|  1 |   0 | SCHD | /home/pi/images/new_drive.hda
++----+-----+------+-------------------------------------
+```
+
+From the <code>scsictl</code> output above, we see <code>new_drive.hda</code> image is now attached to SCSI ID 1. 
+
+With that complete, you can boot up the target computer that has the PiSCSI attached, and initialize or format the new disk. 
+
+== Initializing a new disk on Classic Mac OS ==
+
+The following images show this process on a Macintosh running Mac OS 8 (I think)
+
+{|class="wikitable"
+|[[images/initialize_drive3.png]]
+|On a Macintosh running Classic Mac OS you would open Apple's Drive Setup or HD SC Setup. Once open, you should see your new drive in the list as <nowiki><not initialized></nowiki>.<BR><BR>
+
+* '''Note 1:''' Apple HD SC Setup and earlier versions of Drive Setup has fine grained whitelisting controlling what drives it will initialize, and how large partitions it will create on those drives. You can spoof the INQUIRY data to pretend to be a particular old drive, but that may give you a very small partition (e.g. 20MB).
+* '''Note 2:''' If you have issues initializing the drive, you may try a [https://lowendmac.com/2007/format-any-hard-drive-for-older-macs-with-patched-apple-tools/ patched Apple Drive Setup] or [https://macintoshgarden.org/apps/apple-hd-sc-setup-753-patch HD SC Setup] to bypass hard coded limitations. Or, you may also consider trying a 3rd party tool such as [https://macintoshgarden.org/apps/lido-756 Lido], [https://macintoshgarden.org/apps/scsiprobe SCSI Probe] or [https://macintoshgarden.org/apps/lacie-silverlining-531-more Silverlining].  They can be more forgiving than Apple's Drive Setup.
+* '''Note 3:''' At the time of writing, only ''Silverlining'' drivers are confirmed working with the ''Macintosh Plus''. Lido drivers and Apple drivers are known to not be compatible with a PiSCSI emulated drive on the Plus. See [https://github.com/piscsi/PiSCSI/issues/656 issue#656] for more information.
+
+|-
+|[[images/initialize_drive2.png]]
+|In the warning dialog box, click "Initialize".<BR><BR>'''Note:''' Be careful to initialize the correct drive!
+|-
+|[[images/initialize_drive1.png]]
+|After the drive initialization completes, you should have a drive called "Untitled" with approximately the same amount of space as the .hda you created.
+|}
+
+'''Note:''' This area is for Mac OS disk setup application notes. 
+
+
+= Understanding and doing more things with PiSCSI =
+
+The instructions up to this point are great for new users of the PiSCSI software. The following sections dig deeper into things you can do with PiSCSI.
+
+== Mounting CD / DVD ISO or MO images ==
+
+PiSCSI can mount [https://en.wikipedia.org/wiki/ISO_image CD or DVD ISO] images and MO [https://en.wikipedia.org/wiki/Magneto-optical_drive (Magneto Optical)] images. In most cases, drivers work out of the box with PiSCSI. You may have to use INQUIRY masquerading to get certain drivers to recognize the emulated optical drive.
+
+=== Mac OS Drivers ===
+
+'''Note:''' As of PiSCSI v22.10.01, any Apple CD-ROM and DVD driver for classic Mac OS should work as-is. In previous versions of PiSCSI, they did NOT work with PiSCSI out of the box, which is why patched versions of the Apple drivers are provided below.
+
+Macintosh CD-ROM drivers that have been verified working with PiSCSI:
+
+* [https://macintoshgarden.org/apps/apple-cd-rom-extension-patched Apple CD/DVD Driver 1.2.2] patched (recommended for Mac OS 8.6)
+* [https://macintoshgarden.org/apps/apple-cd-rom-extension-patched Apple CD-ROM 5.4.2] patched
+* [https://macintoshgarden.org/apps/apple-cd-rom-extension-patched Apple CD-ROM 5.3.1] patched (recommended System Software 6.0.x and low memory Macs)
+* [https://macintoshgarden.org/apps/cddvd-drive-tuneup-203 CD/DVD TuneUp 2.0.3]
+* [https://macintoshgarden.org/apps/cd-sunrise-v22b CD-Sunrise 2.2c]
+* [https://macintoshgarden.org/apps/rapidcd RapidCD 1.0.4] (recommended for the highest CD-ROM image compatibility, but consumes a lot of memory)
+
+== What else can PiSCSI do? ==
+
+Seriously, who named this section ?  :)
+
+As the PiSCSI software was originally written for use with the Sharp X68000 computer, it supports a few image formats. The following shows the output from rascsi --help. The list of supported image types is at the bottom.
+
+```
+$ rascsi --help
+SCSI Target Emulator PiSCSI Reloaded version 22.11 --DEVELOPMENT BUILD--  (Oct 23 2022 21:39:11)
+Powered by XM6 TypeG Technology / Copyright (C) 2016-2020 GIMONS
+Copyright (C) 2020-2022 Contributors to the PiSCSI Reloaded project
+Connect type: FULLSPEC
+
+Usage: rascsi [-idn[:m] FILE] ...
+
+ n is SCSI device ID (0-7).
+ m is the optional logical unit (LUN) (0-31).
+ FILE is a disk image file, "daynaport", "bridge", "printer" or "services".
+
+ Image type is detected based on file extension if no explicit type is specified.
+  hd1 : SCSI-1 HD image (Non-removable generic SCSI-1 HD image)
+  hds : SCSI HD image (Non-removable generic SCSI HD image)
+  hdr : SCSI HD image (Removable generic HD image)
+  hda : SCSI HD image (Apple compatible image)
+  hdn : SCSI HD image (NEC compatible image)
+  hdi : SCSI HD image (Anex86 HD image)
+  nhd : SCSI HD image (T98Next HD image)
+  mos : SCSI MO image (MO image)
+  iso : SCSI CD image (ISO 9660 image)
+```
+
+== How to detach an image with scsictl ==
+
+In this section we will review the images currently attached to PiSCSI, and detach one or two.
+
+'''1.''' use <code>scsictl -l</code> to get a listing of currently attached images.
+
+```
+pi@raspberrypi:~ $ scsictl -l
+
++----+-----+------+-------------------------------------
+| ID | LUN | TYPE | DEVICE STATUS
++----+-----+------+-------------------------------------
+|  1 |  0  | SCHD | /home/pi/images/new_drive.hda
+|  2 |  0  | SCHD | /home/pi/images/lando.hda
+|  3 |  0  | SCHD | /home/pi/images/griffin.hda
+|  4 |  0  | SCHD | /home/pi/images/is.hda
+|  5 |  0  | SCHD | /home/pi/images/awesome.hda
+|  6 |  0  | SCHD | /home/pi/images/small_drive.hda
++----+-----+------+-------------------------------------
+```
+
+'''2.''' We want to detach <code>/home/pi/images/small_drive.hda</code>, which is on SCSI ID6. Use the following commands will detach new_drive.hda, then run <code>scsictl -l</code> again to show the still mounted images.
+
+```
+scsictl -i 6 -c detach
+scsictl -l
+```
+
+And the output should look like this..
+
+```
+pi@raspberrypi:~ $ scsictl -i 6 -c detach
+pi@raspberrypi:~ $ scsictl -l
+
++----+----+------+-------------------------------------
+| ID | UN | TYPE | DEVICE STATUS
++----+----+------+-------------------------------------
+|  1 |  0 | SCHD | /home/pi/images/new_drive.hda
+|  2 |  0 | SCHD | /home/pi/images/lando.hda
+|  3 |  0 | SCHD | /home/pi/images/griffin.hda
+|  4 |  0 | SCHD | /home/pi/images/is.hda
+|  5 |  0 | SCHD | /home/pi/images/awesome.hda
++----+----+------+-------------------------------------
+```
+
+== Presenting SCSI disks when the PiSCSI service starts ==
+
+At this point we can start the PiSCSI service and attach images to it. There are two methods to have PiSCSI automatically present disks on the SCSI bus when the service starts up.
+
+=== Web Interface method ===
+The first approach requires the PiSCSI [[Web Interface]] to be installed. Launch the Web Interface and attach the devices that you want as your default configuration. Then click the 'Save' button under the ''Current PiSCSI Configuration'' heading. This will save a configuration file called '''default.json''' into the PiSCSI config directory (~/.config/rascsi). The next time the Web Interface starts up, it will read this configuration file and attach the devices.
+
+=== PiSCSI Service method ===
+The second approach involves modifying the PiSCSI service configuration, and is recommended only for advanced users, or those who prefer to not run the Web Interface.
+
+The configuration for the rascsi service lives in <code>/etc/systemd/system/rascsi.service</code>. We will edit this file and update ExecStart. 
+
+On a new installation, the line looks like this..
+
+```
+pi@raspberrypi:~ $ grep ExecStart /etc/systemd/system/rascsi.service
+ExecStart=/usr/local/bin/rascsi
+```
+
+To load disk images on startup, make the following changes.
+
+'''1.''' Determine what image you want to present, and what SCSI IDs you want to use.  In this example we will mount two images.
+
+```
+/home/pi/images/400MB-system-disk.hda will be on SCSI ID 1
+/home/pi/images/this-house-is-a-prison.hda will be on SCSI ID 2
+/home/pi/images/simcity.iso will be on SCSI ID 5
+```
+
+'''2.''' Open <code>/etc/systemd/system/rascsi.service</code> with your favourite editor, making sure to prepend sudo to your command.
+
+```
+sudo vi /etc/systemd/system/rascsi.service
+```
+
+'''3.''' Find the line starting with <code>ExecStart</code>, and comment it out by adding <code>#</code> to the beginning of the line. It should look like this.
+
+```
+#ExecStart=/usr/local/bin/rascsi
+
+```
+
+'''4.''' Below that line, add a new one as follows...
+
+```
+ExecStart=/usr/local/bin/rascsi -ID1 /home/pi/images/400MB-system-disk.hda -ID2 /home/pi/images/this-house-is-a-prison.hda -ID5 /home/pi/images/simcity.iso
+```
+
+'''Note:''' There is a current bug when providing multiple IDs - see this issue for more info https://github.com/piscsi/PiSCSI/issues/101
+
+
+'''5.''' Save the file and exit the editor.
+
+'''Note:''' If in the future you make any changes to the rascsi.service file like the above, you will need to run "sudo systemctl daemon-reload" for systemd to read your changes.
+
+
+'''6.''' With that completed, we will instruct systemd to re-read the configuration file, restart the rascsi service, then confirm our intended images are attached.
+
+```
+sudo systemctl daemon-reload
+sudo systemctl restart rascsi.service
+scsictl -l
+```
+
+If everything worked, you should see the following
+
+```
+pi@raspberrypi:~ $ sudo systemctl daemon-reload
+pi@raspberrypi:~ $ sudo systemctl restart rascsi.service
+pi@raspberrypi:~ $ scsictl -l
+
++----+----+------+-------------------------------------
+| ID | UN | TYPE | DEVICE STATUS
++----+----+------+-------------------------------------
+|  1 |  0 | SCHD | /home/pi/images/400MB-system-disk.hda
+|  2 |  0 | SCHD | /home/pi/images/this-house-is-a-prison.hda
+|  5 |  0 | SCCD | /home/pi/images/3d-atlas.iso(WRITEPROTECT)
++----+----+------+-------------------------------------
+```
+
+= I have the hardware and software, what next? =
+
+If you've made it this far, you're awesome!!  The next part is how to make mounting/unmounting images easier. A web interface for PiSCSI has been developed to help in this area. Proceed to the [[Web Interface]] page. There we will learn about setting up the PiSCSI management web page, and how to use it.
+
+= Mounting images on your Raspberry Pi locally (advanced) =
+
+In the following steps, we will take a hard drive image that has already been formatted by a Macintosh computer, and mount it on your Raspberry Pi. The example assumes the disk was formatted with the HFS file system on Mac OS 7 or similar.
+
+'''Note!''' Make sure the image you're about to mount is NOT attached with PiSCSI. You may be able to mount a currently attached disk image, but chances are high the file system will be damaged, leading to data loss. Use the <code>scsictl</code> commands covered earlier to confirm the image is not attached.
+
+'''1.''' Install the <code>hfsprogs</code> package on your Raspberry Pi. This package contains the modules required to mount HFS formatted disks (and images). Run the following command to install the <code>hfsprogs</code> package.
+
+```
+sudo apt-get install --yes hfsprogs
+```
+
+You should see something similar to the following.
+
+```
+pi@raspberrypi:~ $ sudo apt-get install --yes hfsprogs
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following additional packages will be installed:
+  libssl1.0.2
+The following NEW packages will be installed:
+  hfsprogs libssl1.0.2
+0 upgraded, 2 newly installed, 0 to remove and 11 not upgraded.
+Need to get 0 B/1,011 kB of archives.
+After this operation, 2,767 kB of additional disk space will be used.
+Preconfiguring packages ...
+Selecting previously unselected package libssl1.0.2:armhf.
+(Reading database ... 41077 files and directories currently installed.)
+Preparing to unpack .../libssl1.0.2_1.0.2q-2_armhf.deb ...
+Unpacking libssl1.0.2:armhf (1.0.2q-2) ...
+Selecting previously unselected package hfsprogs.
+Preparing to unpack .../hfsprogs_332.25-11+b1_armhf.deb ...
+Unpacking hfsprogs (332.25-11+b1) ...
+Setting up libssl1.0.2:armhf (1.0.2q-2) ...
+Setting up hfsprogs (332.25-11+b1) ...
+Processing triggers for man-db (2.8.5-2) ...
+Processing triggers for libc-bin (2.28-10+rpi1) ...
+pi@raspberrypi:~ $
+```
+
+
+
+'''2.''' With the hfsprogs package installed, next we install the hfs kernel module. This is needed for Linux to understand the HFS file system contained in the image file.
+
+
+```
+sudo modprobe -a hfs
+lsmod | grep hfs
+```
+
+From running the above, you should see the following.
+
+```
+pi@raspberrypi:~ $ sudo modprobe -a hfs
+pi@raspberrypi:~ $ lsmod | grep hfs
+hfs                    65536  0
+```
+
+'''3.''' Create a directory to mount the hard disk image to. This can be any directory. We are using /mnt/PiSCSI in this example.
+
+```
+sudo mkdir /mnt/PiSCSI
+```
+
+'''Note:''' sudo is being used with the above command as <code>/mnt</code> is not writeable by the pi user. You are welcome to create a target directory somewhere the Pi user already has permissions, and would not need to prepend sudo to mkdir
+
+
+'''4.''' Find the hard disk image you want to mount on the Raspberry Pi. Assuming your disk images are in <code>/home/pi/images</code>, you can simply list the contents of that directory and decide which you want. In this example we will use <code>/home/pi/images/small_drive.hda</code>.
+
+```
+ls -la /home/pi/images
+```
+
+On the test instillation looks like this.
+
+```
+pi@raspberrypi:~ $ ls -la /home/pi/images
+total 542732
+drwxr-xr-x 2 pi pi      4096 Sep 10 23:51 .
+drwxr-xr-x 7 pi pi      4096 Sep 11 00:45 ..
+-rw-r--r-- 1 pi pi 419430400 Sep 10 23:34 new_drive.hda
+-rw-r--r-- 1 pi pi  52428800 Sep 10 23:49 small_drive.hda
+```
+
+'''5.''' Mount the image. The following command will use a loop device to mount the image. Using a loop device allows the kernel to treat the image like a typical block device (hard drive, usb storage, optical drive, etc). You can find more information on loop devices at [https://en.wikipedia.org/wiki/Loop_device this Wikipedia article]. 
+
+```
+sudo mount -o loop /home/pi/images/small_drive.hda  /mnt/PiSCSI
+mount | grep PiSCSI
+ls -la /mnt/PiSCSI
+```
+
+If the mount was successful, you will see the mount information, and get a directory listing of the contents from your hard disk image.
+
+```
+pi@raspberrypi:~ $ sudo mount -o loop /home/pi/images/small_drive.hda  /mnt/PiSCSI
+pi@raspberrypi:~ $ mount | grep PiSCSI
+/home/pi/images/small_drive.hda on /mnt/PiSCSI type hfs (rw,relatime,uid=0,gid=0)
+pi@raspberrypi:~ $ ls -la /mnt/PiSCSI
+total 130
+drwxr-xr-x 1 root root     10 Sep 10 23:43  .
+drwxr-xr-x 3 root root   4096 Sep 11 01:00  ..
+-rw-r--r-- 1 root root     31 Oct  1  1993 'ClarisWorks 2.0'
+-rw-r--r-- 1 root root  14336 Jun 26  2019 'Desktop DB'
+-rw-r--r-- 1 root root 113304 Jun 26  2019 'Desktop DF'
+drwxr-xr-x 1 root root      4 Jun 26  2019 'DiskCopy 6.3.3'
+-rw-r--r-- 1 root root      0 Apr 27  1994 'Disk First Aid'
+drwxr-xr-x 1 root root      2 Sep 10 23:43  Downloads
+drwxr-xr-x 1 root root      4 Jun 26  2019 'SCSIProbe 4.3 folder'
+drwxr-xr-x 1 root root      5 Jul 18  2010 'StuffIt Expander'$'\252'' 4.0.2'
+```
+
+'''6.''' You can now access this disk like any other drive mounted with the HFS file system. 
+
+'''7.''' Once you are done working on the mounted image, use the following command to unmount the hard disk image.
+
+```
+sudo umount /mnt/PiSCSI
+mount | grep PiSCSI
+```
+
+The above will umount the HFS disk image, and show the output from <code>mount</code>, confirming the image is no longer mounted.
+
+```
+pi@raspberrypi:~ $ sudo umount /mnt/PiSCSI
+pi@raspberrypi:~ $ mount | grep PiSCSI
+```
+
+'''8.''' From here you could use scsictl to re-attach the image and present it on the SCSI bus.

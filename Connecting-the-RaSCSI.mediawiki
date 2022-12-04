@@ -1,0 +1,75 @@
+= Connecting your PiSCSI board to a computer =
+
+This document discusses status indicators, termination, and connecting the PiSCSI board to a computer. The following examples will focus on older Macintosh computers, but the PiSCSI is not Mac specific. At it's heart, the PiSCSI software can talk with SCSI controllers on any SCSI bus. You could connect it to Sun workstations, Amiga computers, audio samplers, keyboards, servers, or any number of other devices.  We can't test and document every system, but don't let that stop you from experimenting on your own.
+
+__TOC__
+
+= What are all these green lights? =
+
+The PiSCSI is outfitted with four green LEDs. They are used as diagnostic tools, with one doubling as an activity indicator.
+
+Depending which model of board, the status LEDs will be in different locations. Regardless of their location, they are used to monitor the following.
+* 3.3 volt power
+* 5 volt power
+* ENB/DBG - monitoring if the PiSCSI software is running. On version 2.1 and newer boards are labelled ENB, and older boards label this as DBG.
+* ACT - flashes when images presented via PiSCSI are being accessed on the SCSI bus
+
+The '''3v''' and '''5v''' LEDs should be lit at all times when the PiSCSI is connected to the Raspberry Pi, and the Pi powered up, 
+
+The '''ENB/DNG''' LED will only illuminate when the PiSCSI daemon is running.  During the initial setup, this LED will not illuminate until the PiSCSI software is installed and running.
+
+The '''ACT''' LED flashes only when images presented via PiSCSI are being accessed, and will otherwise stay dark.
+
+= Understanding the SCSI bus =
+
+No need to re-write what many other sites have already covered. [https://computer.howstuffworks.com/scsi.htm This howstuffworks article] gives a good breakdown of the SCSI bus, controllers, connectors and other useful information. 
+
+The PiSCSI software and hardware work together to emulate one or more SCSI devices and present them to the SCSI bus. The upside to using software for this emulation is the ability to present multiple devices on the SCSI bus from a single piece of hardware. Where SCSI devices typically present a single SCSI ID, PiSCSI can present multiple. Examples of this are covered under [[Drive Setup]].
+
+= Termination =
+
+If you haven't already, take a quick read through the [https://computer.howstuffworks.com/scsi.htm This howstuffworks] article, making sure to cover the section on [https://computer.howstuffworks.com/scsi.htm#pt4 Termination].
+
+The SCSI terminators on the PiSCSI board can be turned on or off. Depending on the version of your PiSCSI board, this is handled by jumpers or switches. 
+
+On a version 2.1 or newer boards, you enable termination by moving '''both''' switches 1 and 2 the two ON position. To disable termination, move '''both''' switches 1 and 2 away from the ON position. The switch is also labelled '''Term Enable''' on the silkscreen.
+
+On a version 1.6 or older boards, you enable termination by putting jumpers on '''JP1''' and '''JP2'''. To disable termination, remove jumpers from '''both''' '''JP1''' and '''JP2'''. They are also marked with '''Terminator Enable''' on the silkscreen.
+
+If your PiSCSI board is the final device on the SCSI chain, you enable termination. If your PiSCSI board is plugged into the middle of a SCSI chain, disable termination.
+
+= Using different connectors =
+
+These PiSCSI boards provide both a DB-25 interface for external SCSI connections, and a 50 pin interface for internal SCSI connections. You could easily mount the PiSCSI attached to your Raspberry Pi inside the computer, and connect the 50 pin SCSI interface to the internal cabling on your computer.
+
+As this project was aimed at older Apple Macintosh computers, and those computers use a DB-25 interface for SCSI connections, the PCB design uses a DB-25 connector. However, not all systems use DB-25 connectors for their SCSI interface.  Apple PowerBook laptops of the same era use an HDI-30 connector for which there are adapters available online. You could also purchase adapters to use the PiSCSI with Centronics 50pin or 68 pin SCSI connectors. Using adapters in this manner is untested, but should work.
+
+= Just plug it in? =
+
+With the PiSCSI attached to your Raspberry Pi, and the Mac computer turned off, connect the PiSCSI board to your Mac.  This may require a short cable to attach the two. Many people are using 3' (90cm) or 6' (180cm) DB-25 Male to Male cables for this connection. Visit your favourite electronics retailer for this if you don't have one already.
+
+Once connected, you can power up the Macintosh.
+
+= Accessories you can use =
+
+== External SCSI Cables ==
+The most common approach in connecting your PiSCSI to a Macintosh will be with a Male to Male DB25 SCSI cable. Make sure that any cable you buy is marked as SCSI (not Parallel) or IEEE-1284 compliant. These cables connect to the DB25 port on the PiSCSI board, and to the back of most Macs manufactured prior to 1998. Using these cables are ideal if you want to use the PiSCSI as an external drive. A cheap option are these [https://www.amazon.com/Monoprice-3-Feet-Molded-Cable-101582/dp/B002HWNS58/ Monoprice cables]. Again, just ensure you have the correct cable before attempting to use them. If you want to use the PiSCSI with a PowerBook that has a HDI30 port, you will need a DB25 to HDI30 adapter, [https://www.monoprice.com/product?p_id=552 like this one].
+
+Some additional options that have been tested are:
+
+* [https://www.amazon.com/gp/product/B07JPDWNKY/ref=crt_ewc_title_srh_1?ie=UTF8&smid=A1SHTSJSJQA89P&th=1 Amazon]
+* [https://www.ebay.com/itm/292770514237 Cablesonline.net]
+
+== Internal SCSI Cables ==
+The internal ribbon cables required for connecting your PiSCSI to the internal connector are typically included in any Macintosh that supports this option. However, if not included you need cables [https://www.amazon.com/PC-Accessories-Connectors-Inches-Internal/dp/B01EHB2YVK/ such as these].
+
+== Powering the PiSCSI Internally ==
+If you decide to mount your PiSCSI inside your Macintosh, you will need a way to power it. Luckily, Molex to USB cables exist and will do the trick. The cable tested for this wiki article is [https://www.amazon.com/CRJ-4-Pin-Female-Sleeved-Adapter/dp/B07FK7TJG1/ available here]. The Macintosh's power supply has enough juice to power both the Raspberry Pi and PiSCSI with just one cable.
+
+= Everything is connected, what next? =
+
+If you've made it this far, head to the [[Drive Setup]] page to create a new disk image and present it to your Mac.
+
+= Troubleshooting =
+
+See [[Troubleshooting]]

@@ -1,0 +1,186 @@
+= Congratulations on your purchase! =
+
+If you are reading this page, it is most likely because you have purchased the PiSCSI Zero kit. Alternatively, you've ordered the PCBs and procured the parts to build the PiSCSI pHAT for your Raspberry Pi. Either way, the following instructions are provided on how to assemble your new PiSCSI Zero board.
+
+If you have the full-sized version of the PiSCSI Reloaded board, see the assembly instructions [https://github.com/piscsi/piscsi/wiki/Full-Size-PiSCSI-Assembly here]
+
+If you have not yet purchased one, you can pick up your very own PiSCSI Reloaded board on [https://www.tindie.com/products/landogriffin/ Tindie].
+
+If you have a Raspberry Pi Zero WH (With Headers already installed), see [https://github.com/piscsi/piscsi/wiki/PiSCSI-Zero-Assembly#Alternate_Assembly_for_Raspberry_Pi_WH This Note]
+
+__TOC__
+
+= Kit contents =
+
+The PiSCSI Reloaded kit available on [https://www.tindie.com/products/landogriffin/ Tindie] contains everything you need to get going. If you In your package, you should see the following.
+
+[[images/assembly_zero/IMG_0742.png | width=200px]]
+
+
+Regardless if you are building from a kit, or purchased your own parts, confirm you have the following components before assembly. 
+
+{|
+|'''Quantity'''
+|'''Image'''
+|'''Description'''
+|'''Link'''
+|-
+|1
+|[[images/RZ_Bare_Board_1.png | width = 200px]] 
+|PiSCSI Zero Main Board with Resistors & LEDs<BR>
+pre-installed
+|[https://www.tindie.com/products/landogriffin/ Tindie]
+|-
+|1
+|[[images/assembly/db25_connector.jpg | width = 200px]]
+|DB-25 Connector
+|[https://lcsc.com/product-detail/D-Sub-Connectors_CONNFLY-Elec-DS1037-25FNAKT74-0CC_C77838.html LCSC]
+|-
+|4
+|[[images/assembly/SN74LS641.jpg | width = 200px]]
+|SN74LS641-1DW transceivers
+|[https://www.ti.com/store/ti/en/p/product/?p=SN74LS641-1DW Texas Instruments]
+|-
+|1
+|[[images/assembly/male-header-pins-40-pins-500x500.jpg | width = 200px]]
+|Breakaway pin headers
+|[https://lcsc.com/product-detail/Pin-Header-Female-Header_BOOMELE-Boom-Precision-Elec-2-54mm-1x40P_C2337.html LCSC]
+|-
+|1
+|[[images/assembly/40-pin.png | width = 200px]]
+|40-pin female header
+|[https://lcsc.com/product-detail/Pin-Header-Female-Header_BOOMELE-Boom-Precision-Elec-C50982_C50982.html LCSC]
+|-
+|1
+|[[images/assembly/microusb.jpg | width = 200px]]
+|Micro USB connector
+|[https://lcsc.com/product-detail/USB-Connectors_XKB-Connectivity-U254-051N-4BH806_C319170.html LCSC]
+|}
+
+= Orientation options =
+Please take careful note of the orientation of the PiSCSI Zero board, as well as the orientation of the Raspberry Pi Zero. If you assemble these incorrectly, DAMAGE MAY OCCUR!
+
+= Assembly Instructions =
+
+== Install Transceivers ==
+
+The following section covers installing the transceivers.
+
+{|
+|'''Note:''' Several people have had a common mistake while<BR>
+assembling their PiSCSI the first time. Please make a special<BR>
+note of the orientation of IC1 and IC2 vs IC3 and IC4<BR>
+(the transceivers). Don't assume that they are all oriented the<BR>
+same way. Check that the dot on the chip (indicating pin 1)<BR>
+matches the circle on the board.
+|[[images/assembly/rotated_transceivers.png]]
+|-
+|Make sure the PCB is clean of debris.<BR>A quick wipe down with Isopropyl Alcohol 99% will work.<BR>
+Apply some flux to the transceiver pads. To speed the process up, you could apply flux to all pads to be soldered. This may speed up assembly.
+|[[images/assembly_zero/IMG_0746.png | width=200px]]
+|-
+|Place the transceivers, checking that the pins line up with the pads nicely.<BR><BR>
+'''Note:''' Also ensure the dimple on the transceiver matches up with the circle on the silkscreen.<BR><BR>
+This is discussed at the top of this section.
+|[[images/assembly_zero/IMG_0747.png | width=500px]]
+|-
+|Solder the transceivers into place. If you're not familiar with surface mount soldering, there are several great demonstrations available on [[https://youtu.be/EW9Y8rDm4kE?t=374 YouTube]] 
+| [[images/assembly_zero/IMG_0748.png | width=500px]]
+|-
+|Before moving on, inspect your work for bridges between the transceiver pins.
+|[[images/assembly/WIN_20200905_18_42_18_Pro.jpg | width=500px]]
+|}
+
+
+== Install the USB Port ==
+
+{|
+|Clean and prep the pads for the USB connector, and apply flux.
+|[[images/assembly_zero/IMG_0750.png | width = 500px]]
+|-
+|Place the USB connector in the holes.<BR>
+The connector should also center the pins on the pads nicely.<BR>
+Solder the top pins in place.
+|[[images/assembly_zero/IMG_0751.png | width = 500px]]
+|-
+|And finally solder the bottom pins in place.
+|[[images/assembly_zero/IMG_0752.png | width = 500px]]
+|-
+|}
+
+== Alternate Assembly for Raspberry Pi WH ==
+{|
+|If you have a Raspberry Pi Zero WH (with headers), you will need to assemble your PiSCSI Zero differently. 
+| [[https://user-images.githubusercontent.com/34318535/198755035-e2940ef7-5c74-4257-a4cb-d48987599139.png | width = 400px]]
+|-
+|The most critical thing to check during assembly is that the pins are not reversed. <BR>A good way to check this is to verify Pin 1 on the PiSCSI connects to Pin 1 on the Raspberry Pi. <BR>Pin 1 has a square pad instead of circular.
+||[[https://user-images.githubusercontent.com/34318535/198754056-da6af5d0-5a57-439b-9411-59511e5ee6c3.png | width = 400px]] [[https://user-images.githubusercontent.com/34318535/198754380-38f48c17-8770-498a-aba5-ee7c89d1ed97.png | width = 400px]]
+|}
+
+== Install the Raspberry Pi Connector ==
+
+{|
+|Take the straight 40-pin breakaway header and cut it EXACTLY in half. You should end up with two headers that are 20 pins long.
+|[[images/assembly_zero/IMG_0753.png | width=500px]]
+|-
+| Insert the breakaway headers into the PiSCSI Zero board as shown here. Make sure you match the orientation of the board. The pins should point AWAY from the transceivers. <br>
+Use the 20 pin female header as a guide to hold the male pins straight while you're soldering.
+| [[images/assembly_zero/IMG_0755.png | width=500px]]
+|-
+| Flip the board and solder all of the male pins into the PiSCSI Zero board. You can remove the female header after a few pins are soldered in each row.
+|[[images/assembly_zero/IMG_0757.png | width=500px]]
+|}
+
+== Install the DB 25 connector ==
+
+{|
+|Snap the DB-25 connector in the PiSCSI board. The mechanical clips should hold it in place. The DB-25 connector should be installed on the same side as the resistors. It should NOT be installed on the same side as the transceivers.
+|[[images/assembly_zero/IMG_0758.png | width=500px]]
+|-
+| Solder all of the pins of the DB-25 connector
+|[[images/assembly_zero/IMG_0760.png | width=500px]]
+|-
+| Flood the mechanical standoffs with solder to re-enforce the DB-25 connector. Since there may be long cables attached to this connector, you want to have the additional mechanical strength.
+|[[images/assembly_zero/IMG_0762.png | width=500px]]
+|}
+
+== Install the Disk Activity LED Connector ==
+
+{|
+| This step is OPTIONAL. You only need to install the 2-pin LED connector if you're using the PiSCSI Zero with an external LED.<br>
+Insert the 2-pin right angle header into the holes, as shown. Solder these two pins into place.<br>
+Tip: you can use the table to hold the right angle header in place (as shown here). Be careful not to touch the pins while soldering. They'll get VERY hot.
+| [[images/assembly_zero/IMG_0763.png | width=500px]]
+|}
+
+= Assemble the Raspberry Pi Zero =
+
+{|
+| Prepare your Raspberry Pi Zero, Zero W or Zero 2 W by making sure that the pads are clean. You may want to clean them with 99% Isopropyl Alcohol.
+|[[images/assembly_zero/IMG_0765.png | width=500px]]
+|-
+|Next, you should solder the 2x20 pin female socket to the BOTTOM of the Raspberry Pi Zero.
+|[[images/assembly_zero/IMG_0766.png | width=500px]]
+|-
+|You should now have the 2x20 pin female socket attached to the BOTTOM of the Raspberry Pi Zero.
+|[[images/assembly_zero/IMG_0763.png | width=500px]]
+|}
+
+= Final Assembly =
+
+{|
+|You should now have a fully assembled PiSCSI Zero with the male pins on the same side as the resistors. Double check that your assembled pieces match this image.
+|[[images/assembly_zero/IMG_0768.png | width=500px]]
+|-
+|You can now install the Raspberry Pi Zero on top of the PiSCSI Zero as shown here. 
+|[[images/assembly_zero/IMG_0773.png | width=500px]]
+|-
+|You can now continue with setting up the SD card and configuring your PiSCSI Zero!
+|[[images/assembly_zero/IMG_0771.png | width=500px]]
+|}
+
+= You're done! =
+
+If you've gotten to this point, your PiSCSI board and optional daughter board are ready to use.
+
+Proceed to the [https://github.com/piscsi/piscsi/wiki/Setup-Instructions Setup Instructions] page.

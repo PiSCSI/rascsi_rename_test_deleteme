@@ -1,0 +1,3 @@
+## Managing PiSCSI with a smartphone or tablet
+
+With the <a href="https://www.rascsi.de">PiSCSI Control app<a> for Android you manage the virtual SCSI devices, the image files and much more. In addition, you stay up to date by push messages with PiSCSI-related news. The app is directly connected to the PiSCSI server (rascsi) on the Pi. The <a href="https://www.rascsi.de">PiSCSI Control website</a> provides more information.

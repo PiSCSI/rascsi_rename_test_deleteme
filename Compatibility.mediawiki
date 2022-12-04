@@ -1,0 +1,341 @@
+= PiSCSI Reloaded Compatibility details =
+
+Below you will find information around the various compatibility aspects of the PiSCSI hardware and software. As the project is under active development, this page will get frequent updates. As much as the page lists systems that work with PiSCSI, configurations listed do not indicate an guarantee on the setup, just that someone just like you has tested and verified it works for them.
+
+__TOC__
+
+= Raspberry Pi compatibility =
+PiSCSI has been tested with several Raspberry Pi models.
+
+{| class="wikitable"
+! scope="col"| Raspberry Pi model
+! scope="col"| Tested and working?
+|-
+|A or B
+|Not supported.<BR>Only has 26 pin GPIO header.
+|-
+|A+ or B+
+|Yes
+|-
+|2 B
+|Yes
+|-
+|Zero (all models)
+|Yes
+|-
+|3 A
+|Yes
+|-
+|3 B
+|Yes
+|-
+|3 B+
+|Yes
+|-
+|4 B
+|Yes
+|}
+
+Any Raspberry Pi with a 40-pin connector should work fine. For the best performance, use a Raspberry Pi 4 with a fast SD card. Please be mindful of cooling your RPi, as the CPU clock may fluctuate due to the influence of heat, leading to unreliable operation. It is also recommended to run your RPi system without a desktop environment, e.g. the ''Lite'' version of Raspberry Pi OS.
+
+The PiSCSI software does not have any special software requirements beyond a Linux OS with root access. It should run on most standard Linux distributions, but testing is performed against [https://www.raspberrypi.org/downloads/raspberry-pi-os/ Raspberry Pi OS] (formerly called Raspbian).
+
+'''Note:''' PiSCSI is primarily used on 32-bit operating systems, but it has been proven to work with 64-bit too.
+
+= System compatibility =
+This table contains the various systems PiSCSI has been tested with, and the test results. It also includes if the system was bootable from the PiSCSI presented SCSI disk.
+
+{| class="wikitable"
+! scope="col"| System
+! scope="col"| Tested and working?
+! scope="col"| Bootable from PiSCSI?
+! scope="col"| Software version
+|-
+|Acorn RISC PC w/ Eesox Fast SCSI II (RISC OS 3.70/4.39)
+|✅
+|✅
+|21.11.01 
+|-
+|Acorn RISC PC w/ PowerTec SCSI-3 (FW:Feb 97) (RISC OS 3.70/4.39)
+|✅
+|✅
+|21.11.01 
+|-
+|Apple IIe w/ SCSI Sandwich II card
+|✅
+|❔
+|
+|-
+|Apple IIgs w/ A2SCSI card
+|❌ - read/write operations work in ProDOS but not GSOS
+|❔
+|21.10.01
+|-
+|Apple Lisa 2 w/ Sun Remarketing SCSI Controller Card SRI661-SC01
+|✅
+|❔ (May work with the QuickBoot mod)
+|22.05.01
+|-
+|Apple Macintosh Plus
+|✅ (Use [https://github.com/piscsi/PiSCSI/wiki/Drive-Setup#Initializing_a_new_disk_on_Classic_Mac_OS Silverlining drivers])
+|✅
+|22.07.02
+|-
+|Apple Macintosh II, IIx, IIcx, IIci, IIfx, IIsi
+|✅
+|✅
+|
+|-
+|Apple Macintosh SE, SE FDHD, SE/30
+|✅
+|✅
+|21.10.01
+|-
+|Apple Macintosh Classic / Classic II
+|✅
+|✅
+|
+|-
+|Apple Macintosh Color Classic / Color Classic II
+|✅
+|✅
+|
+|-
+|Apple Macintosh Quadra/Centris 605 / 610 / 630 / 650 / 660 / 700 / 800 / 840
+|✅
+|✅ (Quadra 840av on 1p5 board)
+|
+|-
+|Apple Macintosh Quadra 950
+|✅
+|✅ 
+|
+|-
+|Apple Macintosh LC/LC II/LC III
+|✅
+|✅
+|
+|-
+|Apple Macintosh Performa 450/475/476
+|✅
+|✅
+|21.10.01
+|-
+|Apple Macintosh Performa 630, Mac OS 7.6
+|✅
+|❔
+|21.10.01
+|-
+|Apple Macintosh Performa 630, MagicMac 6.20, HDDRIVER 11
+|✅
+|n/a (booted from Mac OS)
+|21.10.01
+|-
+|Apple Macintosh PowerBook 180
+|✅
+|✅
+|
+|-
+|Apple Macintosh PowerBook 540c
+|✅
+|✅
+|
+|-
+|Apple Macintosh PowerBook 3400c
+|✅
+|✅
+|
+|-
+|Apple Macintosh PowerBook G3 (Wallstreet II)
+|✅
+|✅
+|
+|-
+|Apple Power Macintosh 7600 (With G3 Card)
+|✅
+|✅
+|
+|-
+|Apple Power Macintosh 8600
+|✅
+|✅
+|21.10.01
+|-
+|Apple Power Macintosh G4 Sawtooth w/ Grappler 930U PCI SCSI-3 Controller Card
+|✅
+|✅
+|21.10.01
+|-
+|Apple Power Macintosh G4 Quicksilver w/ Adaptec AHA-2930CU PCI SCSI Controller Card
+|✅
+|❔
+|
+|-
+|Atari ST/STE ACSI, HDDRIVER 11
+|✅
+|✅
+|21.10.01, ICD compatible since 22.02.01
+|-
+|Atari Falcon SCSI, HDDRIVER 11
+|✅
+|✅
+|21.10.01
+|-
+|Atari TT SCSI and ACSI, HDDRIVER 11
+|✅
+|✅
+|21.10.01
+|-
+|Atari TT System V Release 4.0 1.1-06
+|✅
+|✅
+|21.10.01
+|-
+|Atari TT Linux68k 2.0.36
+|✅
+|n/a (booted from TOS)
+|21.10.01
+|-
+|Commodore Amiga 500+ with A590
+|✅
+|✅
+|
+|-
+|Commodore Amiga 500+ with A570 and SCSI adapter
+|✅
+|✅
+|
+|-
+|Commodore Amiga 600 with Squirrel SCSI adapter
+|✅
+|Not capable
+|
+|-
+|Commodore Amiga 1200 with Squirrel SCSI adapter
+|✅
+|Not capable
+|
+|-
+|Commodore Amiga 1200 with Blizzard 1230-IV + SCSI controller board
+|✅
+|✅
+|21.10.01
+|-
+|Commodore Amiga 2000 with GVP HC+8 II
+|✅
+|✅
+|
+|-
+|Commodore Amiga 3000
+|✅
+|✅
+|21.10.01
+|-
+|Digital AlphaServer 1000 (OpenVMS)
+|✅
+|✅
+|21.10.01
+|-
+|Digital VAXstation 3100
+|✅
+|✅
+|21.10.01
+|-
+|Digital VAXStation 4000/60 (OpenVMS 7.3)
+|✅
+|✅
+|21.12.01
+|-
+|HP 712/100 (NeXTStep 3.3 , HP-UX 10.20 and Debian GNU/Linux 3.0r6)
+|✅
+|✅
+|21.10.01
+|-
+|Linux, Ubuntu 20 (Intel i3 w/ Tekram DC-390F SCSI card)
+|✅
+|❔
+|
+|-
+|Linux, Gentoo with 5.4.141 kernel (Adaptec 2940AU)
+|✅
+|❔
+|21.10.01
+|-
+|PC, PC-DOS 7.0 with Adaptec/Shuttle EPST LPT2SCSI Adapter (EPST.SYS)
+|✅
+|❔
+|
+|-
+|PC, 486, MS-DOS 2/3/5/6/6.22, Windows 95, Windows NT 3.5/4.0, OS/2 4.0 with Adaptec 2940UW2 card
+|✅
+|✅
+|
+|-
+|PC, Pentium 4, Windows XP SP3 with Adaptec AHA-2940U2W Adapter
+|✅
+|❔
+|22.10.1
+|-
+|Sun SPARCstation IPC & IPX
+|✅
+|✅ ([https://github.com/piscsi/PiSCSI/issues/618#issuecomment-1017618751 workaround] for CD-ROMs)
+|21.12.1
+|-
+|Sun SPARCStation 5/10
+|✅
+|✅
+|
+|-
+|Sun Ultra 1
+|✅
+|✅
+|
+|-
+|Silicon Graphics Indigo2 IP22
+|✅
+|✅
+|
+|-
+|Tested something else?
+|Add it Here
+| 
+|
+|-}
+
+✅ = Tested / Working
+
+❔ = Untested.
+
+❌ = Known issues
+
+= Testing methods? =
+
+If you're looking to add a new system to the System compatibility list, please perform the following tests. The following items are considered the bare minimum of functionality, and should work on other systems with your same configuration.
+
+'''Note:''' If you are testing PiSCSI on a digital sampler, please update the [[PiSCSI for Hardware Samplers#compatibility|Sampler Compatibility]] section instead.
+
+== Tested and Working ==
+To be considered '''Tested and working''', please test and confirm the following functions work, and are working consistently.
+
+The following steps require attaching a Hard Drive image with PiSCSI and presenting it on a SCSI ID.
+
+'''1.''' With a Hard Drive image mounted in PiSCSI, can your system (computer, sampler, etc) see the SCSI ID presented from PiSCSI?
+
+'''2.''' Are you able to mount the PiSCSI presented SCSI disk in the operating system on your system?
+
+'''3.''' Are you able to format the PiSCSI presented SCSI disk?
+
+'''4.''' Are you able to successfully read files from the PiSCSI presented SCSI disk?
+
+'''5.''' Are you able to successfully write files from the PiSCSI presented SCSI disk?
+
+== Bootable from PiSCSI ==
+
+To be considered '''Bootable from PiSCSI''', please test and confirm the following functions work, and are working consistently.
+
+'''1.''' If possible, confirm that your system will boot its main operating system from the PiSCSI. This may not be possible as not all configurations have the ability to boot from a SCSI device.
+
+= See Also =
+
+* [[PiSCSI for Hardware Samplers#compatibility|Sampler Compatibility]]
+* [https://github.com/rdmark/RASCSI-X68k/wiki#Compatibility Japanese Home Computer Compatibility] (RaSCSI-X68k)

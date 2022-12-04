@@ -1,0 +1,166 @@
+= Compatibility =
+RaSCSI was originally developed using the SCSI controller code of the X68000 emulator XM6 TypeG, and tested on a X68000 PRO with internal SASI and a genuine SCSI board, internal X68030 SCSI, and XVI Compact internal SCSI. It works also with Mach-2.
+
+Other users have reported it working on a first gen X68000, ACE, EXPERT, XVI, PRO2, SUPER, etc. It is safe to say that it works well on the X68000 platform. The SCSI interface of a SUPER or later is recommended. Multiple SCSI interfaces in one system work well too.
+
+As of PiSCSI Reloaded v22.10.01, SASI support has been deprecated.
+
+== X68000 OS support ==
+Human68k 3.02 is recommended to use all functions, because the Ethernet function and the remote drive function are provided only by the Human68k device driver. If you are using only SCSI mass storage devices, it is no problem to use NetBSD etc.
+
+= X68000 Features =
+
+PiSCSI implements a virtual SCSI device called the Host Bridge in order to bridge the Raspberry Pi host system and the X68000. The Host Bridge together with the following X68000 specific drivers enables a range of features.
+
+There are two special drivers for the X68000 that enable these features.
+* RASDRV.SYS -- Host Drive driver
+* RASETHER.SYS -- Ethernet driver
+
+They can either be build from C source code, found under src/x68k/, or in the RASDRIVER.XDF and RASDRIVER.HDS drive images that are found under bin/x68k/. For convenience, it is recommended to mount these image directly with PiSCSI to easily get the drivers as well as other support programs on to your X68000 system.
+
+== Ethernet driver ==
+Provides equivalent networking functionality of a Neptune-X Ethernet adapter, which is an Ethernet box that's connected over the SCSI bus. It uses a TAP device on the Raspberry Pi to translate network traffic. Similar to Ether+.
+
+It was developed while referencing Shi-MAD's ''ether_ne.sys ver0.03 +M01 +1 +L12'' driver which itself is a modified version of the ''ether_ne.sys'' driver for the ISA bus bridge Ethernet adapter Neptune-X. Its use shall therefore be governed by the terms & conditions of those drivers.
+
+It is also possible to use the original Neptune-X driver with PiSCSI.
+
+Source code available at [https://github.com/rdmark/RASCSI-X68k/tree/main/src/x68k/RASETHER]
+
+== Host File System driver ==
+Provides a similar functionality as WindrvXM, which has become the de-facto standard on X68000 emulators. This makes it possible to mount the Raspberry Pi file system as a remote drive by connecting the X68000 to the host using a Host Bridge device.
+
+You can attach the Host Bridge device to PiSCSI just like any other device, either by passing 'bridge' as the file parameter, or using the 'scbr' device type.
+
+```
+/usr/local/bin/rascsi -ID6 bridge
+-or- /usr/local/bin/scsictl -i 6 -c attach -t bridge
+```
+
+Source code available at [https://github.com/rdmark/RASCSI-X68k/tree/main/src/x68k/RASDRV]
+
+== RASCTL.X ==
+Similarly to rasctl for PiSCSI on the host side, a similar utility has been implemented in a Human68k executable called RASCTL.X which enables you to attach, detach, change media, set protection flags, stop rascsi, and shut down the Raspberry Pi from the X68000 system.
+
+Usage is very similar to rasctl, so refer to its man page.
+
+The C source code can be found under [https://github.com/rdmark/RASCSI-X68k/tree/main/src/x68k/RASCTL]
+
+= Network Adapter =
+The Ethernet driver (RASETHER.SYS) attaches to the Host Bridge device to send and receive packets.
+
+In the following example, the TAP interface on the Raspberry Pi is assigned IP address 10.10.20.2, while the X68000 is configured with 10.10.20.3.
+
+== Configure the X68000 ==
+RASETHER.SYS is simply a retooled version of the Neptune-X driver, so the usage is exactly the same. You need to configure the X68000 environment for network access, for which there are instructions elsewhere on the Web.
+
+Below are excerpts from actual CONFIG.SYS and AUTOEXEC.BAT files:
+
+```
+[CONFIG.SYS excerpt]
+  PROCESS   = 3 10 10
+  DEVICE    = \SYS\RASETHER.SYS
+```
+
+```
+[AUTOEXEC.BAT excerpt]
+  ECHO OFF
+  PATH A:\;A:\SYS;A:\BIN;A:\NETWORK\BIN;
+  PROMPT $P$G
+  SET SYSROOT=A:\
+  SET TEMP=A:\
+  SET TMP=A:\
+  SET HOME=A:\NETWORK
+  SET HOST=X68000
+  XIP.X
+  IFCONFIG.X lp0 up
+  IFCONFIG.X en0 10.10.20.3 netmask 255.255.255.0 up
+  INETDCONF.X +router 10.10.20.2 -rip
+  INETDCONF.X
+```
+
+```
+#
+# /etc/hosts
+#
+127.0.0.1	localhost		localhost
+10.10.20.3	x68k			x68k
+```
+
+```
+#
+# - /etc/networks
+#
+127		loopback
+10.10.20	private-net
+```
+
+== Supported options ==
+
+The following options can be passed to the driver.
+
+```
+-tx [x is a number] : Specify a trap where x is a number between 0 and 6. 
+                      However, if the specified trap number is in use, 
+                      it will autodetect another available number starting at 0.
+
+-n                  : Don't use trap with the API
+```
+
+Extended options for RASETHER
+```
+-px [x is a number] : Receive packet polling interval. 1 is default.
+                      1 means a polling interval of about 16ms.
+                      Max setting is 8. Each increment adds about 16ms to the interval.
+
+-ix [x is a number] : The interrupt approach that polling will use.
+                      Default is 0 which uses MFP FPIP interrupt (V-DISP).
+                      1 means Timer-A interrupt.
+```
+
+== Configure the Raspberry Pi ==
+FOR WIFI REFER TO [https://github.com/piscsi/piscsi/wiki/Dayna-Port-SCSI-Link]
+
+FOR LAN REFER TO ...
+
+-OUTDATED START- 
+We will be using a TAP interface, so we need to enable it. It may already be enabled on your system by default. Check for the existence of /dev/net/tun on your system.
+
+Create the TAP interface like this, for example:
+
+```
+[Add to your startup script, such as /etc/rc.local]
+  ip tuntap add piscsi0 mode tap user root
+  ip link set piscsi0 up
+  ifconfig piscsi0 inet 192.168.68.1/8 up
+  route add -net 192.168.68.0 netmask 255.255.255.0 dev piscsi0
+```
+-OUTDATED END-
+
+This enables a network connection between the Raspberry Pi on 10.10.20.2 and X68000 on 10.10.20.3.
+
+Additional configuration may be required depending on your environment. For WiFi, please utilize RASCSI Reloaded to mount the RASCI BRIDGE using 10.10.20.1/24.
+
+= Host Filesystem Integration =
+PiSCSI provides similar functionality to Windrv and WindrvXM that are commonly used with X68000 emulators XM6/XM6 Kai/TypeG. Using the RASDRV.SYS driver you can mount and access the Raspberry Pi file system from your X68000 and carry out any file operations.
+
+Registering the device driver is simple. F.e. add this to latter part of CONFIG.SYS:
+
+```
+DEVICE    = \SYS\RASDRV.SYS
+```
+
+By default, the Raspberry Pi's root directory gets mounted. When the device driver gets loaded, it will indicate which drive is getting mounted. To mount other directories aside from root, specify the the file system path. For instance, to mount /home/pi and /home/pi/data :
+
+```
+DEVICE    = \SYS\RASDRV.SYS /home/pi/app /home/pi/data
+```
+
+By specifying multiple directories, each of them gets mounted as a separate drive.
+
+If you're using SUSIE, please configure RASDRV.SYS to be loaded before SUSIE. It has been reported that it does not get detected if loaded afterwards.
+
+For other options, refer to the documentation for WindrvXM.
+
+= Other Versions =
+[https://github.com/rascsi/rascsi RaSCSI] contains the original RaSCSI codebase by GIMONS. It maintains the original feature set geared towards X68000, such as the Net Device and Host Services. You may want to try this version of the software out instead if you're using your RaSCSI with a X68000. It's expected to be compatible with PiSCSI and RaSCSI hardware.

@@ -1,0 +1,9 @@
+Frequently Asked Questions about PiSCSI.
+
+= My PiSCSI is running very hot – is this normal? =
+
+The four SN74LS641-1 transceiver ICs that drive the SCSI bus on the PiSCSI are known to run hot. These chips are [rated for 70°C](https://68kmla.org/bb/index.php?threads/rascsi-development-thread.6868/page-25#post-426873) so as long as they are kept below this temperature they should be fine. Some users have [attached heatsinks](https://github.com/piscsi/PiSCSI/issues/484#issuecomment-980522338) to their PiSCSIs as a precaution, but this is not mandatory.
+
+= What is 68kmla? =
+
+[https://68kmla.org/forums/ 68kmla] is the “68k Mac Liberation Army”. Its a group of vintage Mac (and Apple) enthusiasts who talk about nerdy stuff on the forum. This development started as [https://68kmla.org/bb/index.php?threads/rascsi-development-thread.6868/ part of a forum thread]. This PiSCSI project has grown far beyond the original 68k MLA community though.
